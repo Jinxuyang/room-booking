@@ -1,0 +1,16 @@
+#端口
+server:
+  port: 11111
+spring:
+  cloud:
+#    注册中心
+    nacos:
+      discovery:
+        server-addr: 159.75.23.242:8848
+#        数据库
+  datasource:
+    username: root
+    password: 2324127579
+    url: jdbc:mysql://159.75.23.242:3306/spring-cloud?serverTimezone=UTC&characterEncoding=utf-8
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver

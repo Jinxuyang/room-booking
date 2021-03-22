@@ -1,0 +1,22 @@
+package com.fehead.roomBooking.admin.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+/*
+申请类
+id 申请人id 对应的房间状态id 申请时间
+ */
+public class Application {
+   private   Integer id;
+   private  Integer userId;
+   private  Integer roomStatusId;
+   private Timestamp applicableStamp;
+
+}
