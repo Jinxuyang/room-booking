@@ -1,7 +1,18 @@
 package com.fehead.roomBooking.oauth2.config;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 /**
  * 授权服务器配置
@@ -10,15 +21,21 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
  * @Version 1.0
  */
 @AllArgsConstructor
-//@Configuration
-//@EnableAuthorizationServer
+@Configuration
+@EnableAuthorizationServer
 public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
-    /*@Autowired
-    private final PasswordEncoder passwordEncoder;
-    *//*@Autowired
-    private AuthenticationManager authenticationManager;*//*
     @Autowired
-    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    @Qualifier("jwtTokenStore")
+    private final TokenStore tokenStore;
+    @Autowired
+    @Qualifier("jwtAccessTokenConverter")
+    private final JwtAccessTokenConverter converter;
+
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         super.configure(security);
@@ -27,13 +44,19 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("admin")
-                .secret(passwordEncoder.encode("123456"));
+                .withClient("admin")//配置client_id
+                .secret(passwordEncoder.encode("123456"))
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(864000)
+                .scopes("all")//配置申请的权限范围
+                .authorizedGrantTypes("password");
 
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        super.configure(endpoints);
-    }*/
+        endpoints.authenticationManager(authenticationManager)
+                .tokenStore(tokenStore)
+                .accessTokenConverter(converter);
+    }
 }

@@ -1,15 +1,9 @@
 package com.fehead.roomBooking.oauth2.controller;
 
 
-import com.fehead.roomBooking.common.response.CommonReturnType;
-import com.fehead.roomBooking.oauth2.entity.Admin;
-import com.fehead.roomBooking.oauth2.service.IAdminService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,15 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @Autowired
-    private IAdminService adminService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @PostMapping
-    public CommonReturnType insert(@RequestBody Admin admin){
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        adminService.save(admin);
-        return CommonReturnType.create("ok");
+    @GetMapping("/getCurrentUser")
+    public Object getCurrentUser(Authentication authentication) {
+        return authentication.getPrincipal();
     }
 }
 
