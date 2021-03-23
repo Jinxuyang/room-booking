@@ -1,14 +1,6 @@
 spring:
   application:
     name: room-booking-oauth2
-  redis:
-    host: 39.106.212.112
-    password: jinxuyang123
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.106.212.112:3306/room_booking?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
-    username: root
-    password: JINXUyang123
   profiles:
     active: enc
 server:
