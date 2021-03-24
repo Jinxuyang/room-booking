@@ -40,8 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/oauth/**", "/login/**", "/logout/**","/rsa/publicKey").permitAll()
                 .anyRequest().authenticated().and()
-                .formLogin().permitAll()
-                .failureHandler(restfulAuthenticationFailureHandler);
+                .formLogin().permitAll();
+                //.failureHandler(restfulAuthenticationFailureHandler)
                 //.successHandler(restfulAuthenticationSuccessHandler);
     }
 
