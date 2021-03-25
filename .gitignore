@@ -25,3 +25,4 @@ hs_err_pid*
 application-*.yml
 CodeGenerator.java
 bootstrap-*.yml
+room-booking-test/
