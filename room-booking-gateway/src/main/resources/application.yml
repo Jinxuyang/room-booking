@@ -1,4 +1,8 @@
+server:
+  port: 8001
 spring:
+  application:
+    name: room-booking-gateway
   profiles:
     active: enc
   cloud:
@@ -8,11 +12,8 @@ spring:
           uri: lb://room-booking-test
           predicates:
             - Path=/test
+            - Query=admin
         - id: room-booking-oauth2
           uri: lb://room-booking-oauth2
           predicates:
-            - Path=/admin/login
-  application:
-    name: room-booking-gateway
-server:
-  port: 8001
+            - Path=/*/login
