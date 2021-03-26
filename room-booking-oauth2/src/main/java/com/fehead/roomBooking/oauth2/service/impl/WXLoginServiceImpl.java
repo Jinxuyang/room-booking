@@ -1,8 +1,10 @@
-package com.fehead.roomBooking.oauth2.service.Impl;
+package com.fehead.roomBooking.oauth2.service.impl;
 
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.fehead.roomBooking.oauth2.entity.User;
+import com.fehead.roomBooking.oauth2.service.UserService;
 import com.fehead.roomBooking.oauth2.service.WXLoginService;
 import com.fehead.roomBooking.oauth2.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class WXLoginServiceImpl implements WXLoginService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserService userService;
     @Override
     public String login(String code) throws Exception {
 
@@ -36,7 +41,13 @@ public class WXLoginServiceImpl implements WXLoginService {
         String response = HttpUtil.get(URL,param);
 
         JSONObject jsonObject = JSONUtil.parseObj(response);
-        if (jsonObject.get("errcode").equals("0")){
+        if ("0".equals(jsonObject.get("errcode"))){
+            String openid = jsonObject.getStr("openid");
+            if (!userService.isExist(openid)){
+                User user = new User();
+                user.setOpenId(openid);
+                userService.save(user);
+            }
             return jwtUtils.generateToken();
         } else {
             throw new Exception("微信登陆失败");

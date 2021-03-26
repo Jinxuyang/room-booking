@@ -23,6 +23,5 @@ public class WXLoginController extends BaseController {
         String token = wxLoginService.login(code);
         if (!StringUtils.isEmpty(token)) return CommonReturnType.create(token);
         else return CommonReturnType.create("生成token失败","failed");
-
     }
 }
