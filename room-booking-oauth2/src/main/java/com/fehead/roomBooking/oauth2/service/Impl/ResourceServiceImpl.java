@@ -1,4 +1,4 @@
-package com.fehead.roomBooking.oauth2.service;
+package com.fehead.roomBooking.oauth2.service.Impl;
 
 import cn.hutool.core.collection.CollUtil;
 import org.springframework.beans.factory.annotation.Autowired;
