@@ -1,14 +1,10 @@
 package com.fehead.roomBooking.user.controller;
 
 import com.fehead.roomBooking.common.controller.BaseController;
-import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.common.entity.RoomStatus;
 import com.fehead.roomBooking.common.response.CommonReturnType;
 import com.fehead.roomBooking.user.service.RoomStatusService;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -25,15 +21,14 @@ public class RoomStatusController extends BaseController {
          */
     @GetMapping("/{roomId}/statuses")
     public CommonReturnType getAllRoomStatus(@PathVariable("roomId") Integer roomId){
-        return  null;
+        List<RoomStatus> roomStatusById = roomStatusService.getRoomStatusByRoomId(roomId);
+        return  CommonReturnType.create(roomStatusById);
     }
+
     @GetMapping("/{roomId}/statuses/{StatusId}")
     public CommonReturnType getARoomStatusById(@PathVariable("roomId") Integer roomId,
                                                @PathVariable("StatusId")Integer StatusId ){
-        List<RoomStatus> roomStatusById = roomStatusService.getRoomStatusById(roomId);
-        CommonReturnType returnType=new CommonReturnType();
-        returnType.setStatus("200");
-        returnType.setData(roomStatusById);
-        return  returnType;
+        RoomStatus roomStatusById = roomStatusService.getRoomStatusById(roomId,StatusId);
+        return  CommonReturnType.create(roomStatusById);
     }
 }

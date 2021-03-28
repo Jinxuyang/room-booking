@@ -11,6 +11,8 @@
 
     <modules>
         <module>room-booking-common</module>
+        <module>room-booking-admin</module>
+        <module>room-booking-user</module>
     </modules>
 
     <parent>

@@ -1,8 +1,10 @@
 package com.fehead.roomBooking.user.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.common.entity.RoomStatus;
+import com.fehead.roomBooking.common.response.CommonReturnType;
 import com.fehead.roomBooking.user.mapper.ApplicationMapper;
 import com.fehead.roomBooking.user.mapper.RoomStatusMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class ApplicationService {
     public Boolean addApplication(Application application){
         if (!this.isRepeat(application)) {
             int insert = applicationMapper.insert(application);
+            this.roomStatus(application,0);
             if (insert != 0) {
                 log.info("申请增加成功");
                 return true;
@@ -37,15 +40,16 @@ public class ApplicationService {
             }
         }else {
             log.warn("申请的时间重复");
-            return false;
+            throw new RuntimeException("时间重复");
         }
     }
     //id 修改application 可能需要修改对应的房间状态
     public Boolean modifyApplication(Integer id, Application application) {
         application.setId(id);
         int update = applicationMapper.updateById(application);
+        this.roomStatus(application,1);
         if (update!=0){
-            log.info("管理员修改了请求,id为"+id);
+            log.info("用户修改了请求,id为"+id);
             return true;
         }else {
             return false;
@@ -64,5 +68,41 @@ public class ApplicationService {
             return  false;
         }
         return true;
+    }
+    //添加或修改对应房间状态 0 1
+    public Boolean roomStatus(Application application, int i){
+        RoomStatus roomStatus=new RoomStatus();
+        roomStatus.setRoomId(application.getRoomId());
+        roomStatus.setStartStamp(application.getStartStamp());;
+        roomStatus.setEndStamp(application.getEndStamp());
+        roomStatus.setStatus(1);
+        int insert=0;
+        switch (i){
+            case 0:
+                insert = roomStatusMapper.insert(roomStatus);
+                if (insert!=0){
+                    log.info("添加房间状态成功");
+                }else {
+                    throw new  RuntimeException("房间状态插入时出现问题");
+                }
+                break;
+            case 1:
+                insert = roomStatusMapper.updateById(roomStatus);
+                if (insert!=0){
+                    log.info("添加房间状态成功");
+                }else {
+                    throw new  RuntimeException("房间状态修改时出现问题");
+                }
+                break;
+        }
+
+        return  true;
+    }
+
+    public List<Application> getApplication(Integer userId,Integer pageNum) {
+        QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        Page<Application> applicationPage=new Page<>();
+        return applicationMapper.selectPage(applicationPage,queryWrapper).getRecords();
     }
 }

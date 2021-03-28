@@ -1,6 +1,6 @@
 package com.fehead.roomBooking.admin.service;
 
-import com.fehead.roomBooking.admin.entity.Room;
+import com.fehead.roomBooking.common.entity.Room;
 import com.fehead.roomBooking.admin.mapper.RoomMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

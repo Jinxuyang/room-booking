@@ -18,9 +18,15 @@ public class RoomStatusService {
         this.roomStatusMapper = roomStatusMapper;
     }
     //返回指定房间id的房间状态
-    public List<RoomStatus> getRoomStatusById(Integer id) {
+    public List<RoomStatus> getRoomStatusByRoomId(Integer roomId) {
         QueryWrapper<RoomStatus> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("room_id", id);
+        queryWrapper.ge("room_id", roomId);
         return roomStatusMapper.selectList(queryWrapper);
+    }
+    public RoomStatus getRoomStatusById(Integer roomId,Integer id) {
+        QueryWrapper<RoomStatus> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ge("id", id);
+        queryWrapper.ge("room_id", roomId);
+        return roomStatusMapper.selectOne(queryWrapper);
     }
 }

@@ -1,7 +1,6 @@
 package com.fehead.roomBooking.admin.controller;
 
-import com.fehead.roomBooking.admin.entity.RoomStatus;
-import com.fehead.roomBooking.admin.mapper.RoomStatusMapper;
+import com.fehead.roomBooking.common.entity.RoomStatus;
 import com.fehead.roomBooking.admin.service.RoomStatusService;
 import com.fehead.roomBooking.common.controller.BaseController;
 import com.fehead.roomBooking.common.response.CommonReturnType;
@@ -26,13 +25,16 @@ public class RoomController extends BaseController {
         获取指定id教室的所有状态信息
          */
     @GetMapping("/{roomId}/status")
-    public CommonReturnType getStatus(@PathVariable("roomId") Integer id)
-    {
-        CommonReturnType returnType=new CommonReturnType();
-        List<RoomStatus> roomStatusById = roomStatusService.getRoomStatusById(id);
-        returnType.setData(roomStatusById);
-        returnType.setStatus("200");
-        return returnType;
+    public CommonReturnType getStatus(@PathVariable("roomId") Integer id,
+                                      Integer pageNum ) {
+        if (pageNum==null){
+            throw new RuntimeException("pageNum参数缺失");
+        }
+
+        List<RoomStatus> roomStatusById = roomStatusService.getRoomStatusById(id,pageNum);
+
+        return   CommonReturnType.create(roomStatusById);
+
     }
     /*
     为指定id教室新增状态
@@ -41,27 +43,29 @@ public class RoomController extends BaseController {
     public CommonReturnType addStatus(@PathVariable("roomId") String roomId,
                                       @RequestBody RoomStatus roomStatus)
     {
-        CommonReturnType returnType=new CommonReturnType();
+
         roomStatusService.addRoomStatus(roomStatus);
-        returnType.setStatus("200");
-        returnType.setData("添加房间状态成功");
-        return returnType;
+        return CommonReturnType.create("添加房间状态成功");
     }
     /*
     修改指定id状态
      */
     @PutMapping("/{roomId}/status/{statusId}")
-    public CommonReturnType changeStatus(@PathVariable("roomId") Integer roomId,
-                                         @PathVariable("statusId") String statusId,
+    public CommonReturnType modifyStatus(@PathVariable("roomId") Integer roomId,
+                                         @PathVariable("statusId") Integer statusId,
                                          @RequestBody RoomStatus roomStatus)
     {
-        CommonReturnType returnType=new CommonReturnType();
-        Boolean changeRoomStatusById = roomStatusService.changeRoomStatusById(roomId, roomStatus);
+        roomStatus.setRoomId(roomId);
+        roomStatus.setId(statusId);
+        Boolean changeRoomStatusById = roomStatusService.modifyRoomStatusById(roomStatus);
         if (changeRoomStatusById){
-            returnType.setData("修改成功");
-            returnType.setStatus("200");
+
+            log.info("管理员修改了房间状态 id="+statusId);
+            return CommonReturnType.create("修改成功");
+        }else {
+            log.info("房间状态修改失败");
+          return  CommonReturnType.create("修改失败","fail");
         }
-        return returnType;
     }
     /*
     删除指定id状态
@@ -70,12 +74,11 @@ public class RoomController extends BaseController {
     public CommonReturnType deleteStatus(@PathVariable("roomId") Integer roomId,
                                          @PathVariable("statusId") Integer statusId)
     {
-        CommonReturnType returnType=new CommonReturnType();
         Boolean deleteRoomStatusById = roomStatusService.deleteRoomStatusById(statusId);
         if (deleteRoomStatusById){
-            returnType.setData("删除成功");
-            returnType.setStatus("200");
+            log.info("管理员删除了房间状态 id="+statusId);
+         return    CommonReturnType.create("删除成功");
         }
-        return returnType;
+        return  CommonReturnType.create("删除失败");
     }
 }

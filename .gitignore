@@ -1,2 +1,8 @@
 /room-booking-admin/target/
-/.idea/
+/room-booking-admin/src/main/resources
+/room-booking-common/target
+/room-booking-common/src/main/resources
+/room-booking-user/target/
+/room-booking-user/src/main/resources
+.idea/libraries
+.idea/*

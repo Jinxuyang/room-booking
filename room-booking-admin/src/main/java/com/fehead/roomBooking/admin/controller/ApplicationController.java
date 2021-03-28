@@ -1,14 +1,17 @@
 package com.fehead.roomBooking.admin.controller;
 
-import com.fehead.roomBooking.admin.entity.Application;
-import com.fehead.roomBooking.admin.mapper.ApplicationMapper;
+import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.admin.service.ApplicationService;
 import com.fehead.roomBooking.common.controller.BaseController;
 import com.fehead.roomBooking.common.response.CommonReturnType;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -20,57 +23,64 @@ public class ApplicationController extends BaseController {
         this.applicationService = applicationService;
     }
 
-    /*
-        获取所有申请
-         */
+    /**
+     * 获取所有申请
+     */
     @ApiOperation(value = "get请求调用示例", notes = "invokePost说明")
     @GetMapping
-    public CommonReturnType getAllApplication(Integer pageNum){
-        CommonReturnType returnType=new CommonReturnType();
-        returnType.setData(applicationService.getAllApplication(pageNum));
-        returnType.setStatus("200");
-        return returnType;
+    public CommonReturnType getAllApplication( Integer pageNum){
+        if (pageNum==null){
+            throw new RuntimeException("pageNum参数缺失");
+        }
+        return   CommonReturnType.create(applicationService.getAllApplication(pageNum));
+
     }
+
+    /**
+     *
+     * @param applicationId
+     * @return
+     */
     /*
     获取指定id申请
      */
     @GetMapping("/{applicationId}")
     public CommonReturnType getApplication(@PathVariable("applicationId") Integer applicationId){
-        CommonReturnType returnType=new CommonReturnType();
-
         Application applicationById = applicationService.getApplicationById(applicationId);
         if (applicationById!=null){
-            returnType.setData(applicationById);
-            returnType.setStatus("200");
+
+            CommonReturnType.create(applicationById);
         }
-        return returnType;
+        return CommonReturnType.create("fail");
     }
     /*
     新增申请
      */
     @PostMapping
-    public CommonReturnType addApplication(@RequestBody Application application){
-        CommonReturnType returnType=new CommonReturnType();
+    public CommonReturnType addApplication(@Valid @RequestBody Application application, BindingResult result){
+        if (result.hasErrors()){
+            throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
+        }
         Boolean addApplication = applicationService.addApplication(application);
         if (addApplication){
-            returnType.setStatus("200");
-            returnType.setData("新增成功");
+          return   CommonReturnType.create("success");
         }
-        return returnType;
+        return   CommonReturnType.create("fail");
     }
     /*
     修改指定id申请
      */
     @PutMapping("/{applicationId}")
-    public CommonReturnType changeApplication(@PathVariable("applicationId") Integer applicationId,
-                                              @RequestBody Application application){
-        CommonReturnType returnType=new CommonReturnType();
-        Boolean changeApplication = applicationService.changeApplication(applicationId, application);
-        if (changeApplication){
-            returnType.setStatus("200");
-            returnType.setData("application修改成功");
+    public CommonReturnType modifyApplication(@PathVariable("applicationId") Integer applicationId,
+                                             @Valid  @RequestBody Application application,BindingResult result){
+        if (result.hasErrors()){
+            throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         }
-        return returnType;
+        Boolean changeApplication = applicationService.modifyApplication(applicationId, application);
+        if (changeApplication){
+            return CommonReturnType.create("success");
+        }
+        return CommonReturnType.create("fail");
     }
     /*
     删除指定id申请
@@ -80,9 +90,8 @@ public class ApplicationController extends BaseController {
         CommonReturnType returnType=new CommonReturnType();
         Boolean delete = applicationService.deleteById(applicationId);
         if (delete){
-            returnType.setStatus("200");
-            returnType.setData("application修改成功");
+            return CommonReturnType.create("success");
         }
-        return returnType;
+        return CommonReturnType.create("fail");
     }
 }
