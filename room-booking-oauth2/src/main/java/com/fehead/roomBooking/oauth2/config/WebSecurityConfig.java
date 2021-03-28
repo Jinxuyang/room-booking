@@ -1,8 +1,5 @@
 package com.fehead.roomBooking.oauth2.config;
 
-import com.fehead.roomBooking.oauth2.component.RestfulAuthenticationFailureHandler;
-import com.fehead.roomBooking.oauth2.component.RestfulAuthenticationSuccessHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,10 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private RestfulAuthenticationSuccessHandler restfulAuthenticationSuccessHandler;
-    @Autowired
-    private RestfulAuthenticationFailureHandler restfulAuthenticationFailureHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
