@@ -23,15 +23,13 @@ public class ApplicationService {
         this.roomStatusMapper = roomStatusMapper;
     }
 
-    /*
+    /**
     增加application 同时添加对应房间状态  检查是否与其他申请的时间重合
      */
     public Boolean addApplication(Application application){
         if (!(this.isDuplicate(application))) {
+            Boolean aBoolean = this.roomStatus(application, 0);
             int insert = applicationMapper.insert(application);
-            //
-            this.roomStatus(application,0);
-
             if (insert != 0) {
                 log.info("申请增加成功");
                 return true;
@@ -101,8 +99,8 @@ public class ApplicationService {
         //获取房间状态 进行比较
         QueryWrapper<RoomStatus> queryWrapper=new QueryWrapper<>();
         //ge 大于等于 le小于等于 相同数据可能显示不重复
-        queryWrapper.ge("start_stamp",application.getStartStamp()).or()
-                .le("end_stamp",application.getEndStamp());
+        queryWrapper.ge("start_stamp",application.getStartStamp());
+             queryWrapper.le("end_stamp",application.getEndStamp());
         List<RoomStatus> roomStatuses = roomStatusMapper.selectList(queryWrapper);
         if (roomStatuses.size()==0){
             log.info("申请未重复");
@@ -136,6 +134,7 @@ public class ApplicationService {
         switch (i){
             case 0:
                  insert = roomStatusMapper.insert(roomStatus);
+                 application.setRoomStatusId(roomStatus.getId());
                 if (insert!=0){
                     log.info("添加房间状态成功");
                 }else {
@@ -145,7 +144,7 @@ public class ApplicationService {
             case 1:
                 insert = roomStatusMapper.updateById(roomStatus);
                 if (insert!=0){
-                    log.info("添加房间状态成功");
+                    log.info("修改房间状态成功");
                 }else {
                     throw new  RuntimeException("房间状态修改时出现问题");
                 }

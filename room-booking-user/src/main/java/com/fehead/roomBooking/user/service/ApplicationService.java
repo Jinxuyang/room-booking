@@ -29,8 +29,9 @@ public class ApplicationService {
      */
     public Boolean addApplication(Application application){
         if (!this.isRepeat(application)) {
-            int insert = applicationMapper.insert(application);
+            //先插入获取room_status_id
             this.roomStatus(application,0);
+            int insert = applicationMapper.insert(application);
             if (insert != 0) {
                 log.info("申请增加成功");
                 return true;
@@ -60,8 +61,8 @@ public class ApplicationService {
         //获取房间状态 进行比较
         QueryWrapper<RoomStatus> queryWrapper=new QueryWrapper<>();
         //ge 大于等于 le小于等于
-        queryWrapper.ge("start_stamp",application.getStartStamp())
-                .le("end_stamp",application.getEndStamp());
+        queryWrapper.ge("start_stamp",application.getStartStamp());
+        queryWrapper.le("end_stamp",application.getEndStamp());
         List<RoomStatus> roomStatuses = roomStatusMapper.selectList(queryWrapper);
         if (roomStatuses.size()==0){
             log.info("申请未重复");
@@ -79,6 +80,7 @@ public class ApplicationService {
         int insert=0;
         switch (i){
             case 0:
+                application.setRoomId(roomStatus.getId());
                 insert = roomStatusMapper.insert(roomStatus);
                 if (insert!=0){
                     log.info("添加房间状态成功");
@@ -98,11 +100,11 @@ public class ApplicationService {
 
         return  true;
     }
-
+    //分页查询
     public List<Application> getApplication(Integer userId,Integer pageNum) {
         QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("user_id",userId);
-        Page<Application> applicationPage=new Page<>();
+        Page<Application> applicationPage=new Page<>(pageNum,5);
         return applicationMapper.selectPage(applicationPage,queryWrapper).getRecords();
     }
 }
