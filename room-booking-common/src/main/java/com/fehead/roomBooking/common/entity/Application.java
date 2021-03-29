@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
@@ -19,7 +20,7 @@ import java.sql.Timestamp;
 id 申请人id 对应的房间状态id 申请时间 房间id
  */
 
-public class Application {
+public class Application implements Serializable {
    @TableId(type= IdType.AUTO)
    private   Integer id;
    private  Integer userId;
@@ -59,6 +60,17 @@ public class Application {
    private String remarks;
    private String equipment;
 
+   public Long getApplicationStamp() {
+      return applicationStamp.getTime();
+   }
+
+   public Long getStartStamp() {
+      return startStamp.getTime();
+   }
+
+   public Long getEndStamp() {
+      return endStamp.getTime();
+   }
 
    public Application(Integer userId, Integer roomStatusId, Timestamp applicationStamp) {
       this.userId = userId;

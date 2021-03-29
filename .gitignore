@@ -6,3 +6,4 @@
 /room-booking-user/src/main/resources
 .idea/libraries
 .idea/*
+/.idea/
