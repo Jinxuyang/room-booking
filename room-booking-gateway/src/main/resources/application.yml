@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: enc
+  cloud:
+    gateway:
+      routes:
+        - id: room-booking-test
+          uri: lb://room-booking-test
+          predicates:
+            - Path=/test
+        - id: room-booking-oauth2
+          uri: lb://room-booking-oauth2
+          predicates:
+            - Path=/*/login
+  application:
+    name: room-booking-gateway
+server:
+  port: 8001

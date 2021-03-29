@@ -13,6 +13,9 @@
         <module>room-booking-common</module>
         <module>room-booking-admin</module>
         <module>room-booking-user</module>
+        <module>room-booking-oauth2</module>
+        <module>room-booking-gateway</module>
+        <module>room-booking-test</module>
     </modules>
 
     <parent>
@@ -36,6 +39,8 @@
         <aliyun-oss.version>2.5.0</aliyun-oss.version>
         <spring-validation.version>2.4.3</spring-validation.version>
         <mybatis-plus.version>3.4.1</mybatis-plus.version>
+        <mybatis-plus-generator.version>3.4.1</mybatis-plus-generator.version>
+        <velocity-engine-core.version>2.2</velocity-engine-core.version>
     </properties>
 
     <dependencies>
@@ -90,6 +95,18 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!--mybatis-plus-generator-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis-plus-generator.version}</version>
+            </dependency>
+            <!--velocity-engine-core-->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity-engine-core.version}</version>
             </dependency>
             <!--Mysql数据库驱动-->
             <dependency>
