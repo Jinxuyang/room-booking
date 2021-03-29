@@ -2,4 +2,4 @@ spring:
   application:
     name: room-booking-admin
   profiles:
-    active: dev
+    active: enc
