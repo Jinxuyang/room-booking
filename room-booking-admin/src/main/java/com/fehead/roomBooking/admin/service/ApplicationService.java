@@ -9,6 +9,8 @@ import com.fehead.roomBooking.admin.mapper.RoomStatusMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +49,7 @@ public class ApplicationService {
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
          applicationMapper.selectPage(applicationPage,null);
+//         applicationTempMapper.selectPage(applicationPage,null);
         return applicationPage.getRecords();
     }
 
@@ -127,8 +130,8 @@ public class ApplicationService {
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
         roomStatus.setRoomId(application.getRoomId());
-        roomStatus.setStartStamp(application.getStartStamp());;
-        roomStatus.setEndStamp(application.getEndStamp());
+        roomStatus.setStartStamp(new Timestamp( application.getStartStamp()));;
+        roomStatus.setEndStamp(new Timestamp(application.getEndStamp()));
         roomStatus.setStatus(1);
         int insert=0;
         switch (i){
@@ -153,4 +156,6 @@ public class ApplicationService {
 
         return  true;
     }
+    //序列化为正常的long
+
 }
