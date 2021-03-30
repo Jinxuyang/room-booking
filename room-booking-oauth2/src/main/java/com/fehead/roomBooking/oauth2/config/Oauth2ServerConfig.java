@@ -1,5 +1,6 @@
 package com.fehead.roomBooking.oauth2.config;
 
+import com.fehead.roomBooking.oauth2.component.CustomExceptionTranslator;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +36,8 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     @Qualifier("jwtAccessTokenConverter")
     private final JwtAccessTokenConverter converter;
+    @Autowired
+    private final CustomExceptionTranslator customExceptionTranslator;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -58,6 +61,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore)
                 .accessTokenConverter(converter)
-                .pathMapping("/oauth/token","/admin/login");
+                .pathMapping("/oauth/token","/admin/login")
+                .exceptionTranslator(customExceptionTranslator);
     }
 }
