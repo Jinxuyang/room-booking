@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: room-booking-admin
-  profiles:
-    active: enc
-server:
-  port: 8003
-
