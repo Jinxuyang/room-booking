@@ -6,6 +6,7 @@ import com.fehead.roomBooking.oauth2.service.WXLoginService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Version 1.0
  */
 @RestController
+@RequestMapping("/api/v1")
 public class WXLoginController extends BaseController {
     @Autowired
     private WXLoginService wxLoginService;

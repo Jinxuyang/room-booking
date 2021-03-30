@@ -36,7 +36,7 @@ public class ResourceServerConfig {
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());
         http.oauth2ResourceServer().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeExchange()
-                .pathMatchers("/*/login","/oauth/**").permitAll()//白名单配置
+                .pathMatchers("/api/v1/*/login","/oauth/**").permitAll()//白名单配置
                 .anyExchange().access(authorizationManager)//鉴权管理器配置
                 .and()
                 .exceptionHandling()

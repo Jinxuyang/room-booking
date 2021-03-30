@@ -27,7 +27,7 @@ spring:
         - id: room-booking-oauth2
           uri: lb://room-booking-oauth2
           predicates:
-            - Path=/*/login
+            - Path=/api/v1/*/login
   application:
     name: room-booking-gateway
 server:

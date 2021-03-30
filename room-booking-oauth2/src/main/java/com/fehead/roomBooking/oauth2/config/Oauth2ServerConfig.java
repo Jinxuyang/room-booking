@@ -61,7 +61,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore)
                 .accessTokenConverter(converter)
-                .pathMapping("/oauth/token","/admin/login")
+                .pathMapping("/oauth/token","/api/v1/admin/login")
                 .exceptionTranslator(customExceptionTranslator);
     }
 }
