@@ -17,14 +17,19 @@ import java.util.TreeMap;
  */
 @Service
 public class ResourceServiceImpl {
+    private static final String PREFIX = "/api/v1";
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+
 
     @PostConstruct
     public void initData() {
         Map<String, List<String>> resourceRolesMap = new TreeMap<>();
-        resourceRolesMap.put("/test", CollUtil.toList("admin"));
-        //resourceRolesMap.put("/api/user/currentUser", CollUtil.toList("ADMIN", "TEST"));
+        resourceRolesMap.put(PREFIX+"/users", CollUtil.toList("user"));
+        resourceRolesMap.put(PREFIX+"/rooms/*/statuses", CollUtil.toList("user","admin"));
+        resourceRolesMap.put(PREFIX+"/rooms/*/statuses/*", CollUtil.toList("user","admin"));
+        resourceRolesMap.put(PREFIX+"/applications", CollUtil.toList("user","admin"));
+        resourceRolesMap.put(PREFIX+"/applications/*", CollUtil.toList("user","admin"));
         redisTemplate.opsForHash().putAll("AUTH:RESOURCE_ROLES_MAP", resourceRolesMap);
     }
 }
