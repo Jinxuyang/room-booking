@@ -47,16 +47,16 @@ public class Application implements Serializable {
    private String  email;
    @NotNull(message = "电话不能为空")
    @Pattern(regexp = "^1(3|4|5|7|8)\\d{9}$",message = "手机号码格式错误")
-   private String phone_number;
+   private String phoneNumber;
    //学号 工号
    @NotNull(message = "学号/工号不能为空")
-   private String  job_number;
+   private String  jobNumber;
    @NotNull(message = "开始时间不能为空")
    private Timestamp startStamp;
    @NotNull(message = "结束时间不能为空")
    private Timestamp endStamp;
    @NotNull(message = "申请原因不能为空")
-   private String  reasons_for_application;
+   private String  reasonsForApplication;
    private String remarks;
    private String equipment;
 
