@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -25,12 +26,23 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
 
+
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
         URI uri = authorizationContext.getExchange().getRequest().getURI();
-        Object obj = redisTemplate.opsForHash().get("AUTH:RESOURCE_ROLES_MAP", uri.getPath());
+        String oriUri = uri.getPath();
+
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        String resUri;
+        if (antPathMatcher.match("/api/v1/applications/*",oriUri)) resUri = "/api/v1/applications/*";
+        else if (antPathMatcher.match("/api/v1/rooms/*/statues",oriUri)) resUri = "/api/v1/rooms/*/statues";
+        else if (antPathMatcher.match("/api/v1/rooms/*/statues/*",oriUri)) resUri = "/api/v1/rooms/*/statues/*";
+        else resUri = oriUri;
+
+        Object obj = redisTemplate.opsForHash().get("AUTH:RESOURCE_ROLES_MAP", resUri);
         List<String> authorities = Convert.toList(String.class,obj);
         authorities = authorities.stream().map(i -> i = "ROLE_" + i).collect(Collectors.toList());
+
         return mono
                 .filter(Authentication::isAuthenticated)
                 .flatMapIterable(Authentication::getAuthorities)
