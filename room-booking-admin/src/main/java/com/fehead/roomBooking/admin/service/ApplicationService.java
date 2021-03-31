@@ -10,7 +10,6 @@ import com.fehead.roomBooking.common.entity.RoomStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -144,8 +143,8 @@ public class ApplicationService {
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
         roomStatus.setRoomId(application.getRoomId());
-        roomStatus.setStartStamp(new Timestamp( application.getStartStamp()));;
-        roomStatus.setEndStamp(new Timestamp(application.getEndStamp()));
+        roomStatus.setStartStamp(application.getStartStamp());
+        roomStatus.setEndStamp(application.getEndStamp());
         //通过则房间不可用
         if (application.getStatus().equals(1)){
             roomStatus.setStatus(1);

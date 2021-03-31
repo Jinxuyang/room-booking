@@ -8,6 +8,7 @@ import com.fehead.roomBooking.oauth2.service.UserService;
 import com.fehead.roomBooking.oauth2.service.WXLoginService;
 import com.fehead.roomBooking.oauth2.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,8 +20,10 @@ import java.util.HashMap;
  */
 @Service
 public class WXLoginServiceImpl implements WXLoginService {
-    private static final String APPID = "wx9fd669c6b50d23ad";
-    private static final String SECRET = "61d3f2d15651b1c45fd47e0e5befb5dd";
+    @Value("${weixin.appid}")
+    private String APPID ;
+    @Value("${weixin.secret}")
+    private String SECRET;
     private static final String GRANT_TYPE = "authorization_code";
     private static final String URL = " https://api.weixin.qq.com/sns/jscode2session";
 
