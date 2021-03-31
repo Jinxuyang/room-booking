@@ -7,12 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @Slf4j
 public class RoomStatusService {
     private RoomStatusMapper roomStatusMapper;
+
     @Autowired
     public RoomStatusService(RoomStatusMapper roomStatusMapper) {
         this.roomStatusMapper = roomStatusMapper;
@@ -28,5 +31,64 @@ public class RoomStatusService {
         queryWrapper.ge("id", id);
         queryWrapper.ge("room_id", roomId);
         return roomStatusMapper.selectOne(queryWrapper);
+    }
+
+    public Map<String,List<String>> getRoomStatusMonthly(String dateStr,int roomId) throws ParseException {
+        final int SECOND_OF_DAY = 86400;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        Date date = format.parse(dateStr);
+        long timeStamp = date.getTime();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int dayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        QueryWrapper<RoomStatus> wrapper = new QueryWrapper<>();
+        wrapper.eq("id",roomId)
+                .between("start_stamp",timeStamp,timeStamp+ (long) SECOND_OF_DAY *dayOfMonth);
+
+        List<String> full = new ArrayList<>(dayOfMonth);
+        List<String> notFull = new ArrayList<>(dayOfMonth);
+
+        List<RoomStatus> list = roomStatusMapper.selectList(wrapper);
+        boolean[] dayStatus = new boolean[4];
+        for (int i = 0; i < dayOfMonth; i++) {
+            Arrays.fill(dayStatus,false);
+            int finalI = i;
+            list.stream()
+                    .filter(s -> s.getStartStamp() >= timeStamp+((long) SECOND_OF_DAY *(finalI - 1)) && s.getEndStamp() <= timeStamp+((long) finalI *SECOND_OF_DAY))
+                    .forEach(r ->{
+                        long startTime = r.getStartStamp();
+                        long endTime = r.getEndStamp();
+                        long todayTime = timeStamp+((long) SECOND_OF_DAY *(finalI - 1));
+
+                        if (startTime >= todayTime+(9*3600)) dayStatus[0] = true;
+                        else if (startTime >= todayTime+(14*3600)) dayStatus[1] = true;
+                        else if (startTime >= todayTime+(16*3600)) dayStatus[2] = true;
+                        else if (startTime >= todayTime+(18*3600)) dayStatus[3] = true;
+
+                        if (endTime <= todayTime+(11*3600)) dayStatus[0] = true;
+                        else if (endTime <= todayTime+(16*3600)) dayStatus[1] = true;
+                        else if (endTime <= todayTime+(18*3600)) dayStatus[2] = true;
+                        else if (endTime <= todayTime+(20*3600)) dayStatus[3] = true;
+
+                        boolean isFull = true;
+                        for (int j = 0; j < 4; j++) {
+                            if (!dayStatus[j]) {
+                                isFull = false;
+                                break;
+                            }
+                        }
+                        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                        if (isFull) full.add(format1.format(timeStamp+((long) finalI *SECOND_OF_DAY)));
+                        else notFull.add(format1.format(timeStamp+((long) finalI *SECOND_OF_DAY)));
+                    });
+        }
+
+        Map<String,List<String>> res = new HashMap<>();
+        res.put("full",full);
+        res.put("notFull",notFull);
+
+        return res;
+
     }
 }

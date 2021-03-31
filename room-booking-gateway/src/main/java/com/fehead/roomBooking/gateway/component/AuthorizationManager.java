@@ -35,8 +35,8 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         String resUri;
         if (antPathMatcher.match("/api/v1/applications/*",oriUri)) resUri = "/api/v1/applications/*";
-        else if (antPathMatcher.match("/api/v1/rooms/*/statues",oriUri)) resUri = "/api/v1/rooms/*/statues";
-        else if (antPathMatcher.match("/api/v1/rooms/*/statues/*",oriUri)) resUri = "/api/v1/rooms/*/statues/*";
+        else if (antPathMatcher.match("/api/v1/rooms/*/statuses",oriUri)) resUri = "/api/v1/rooms/*/statuses";
+        else if (antPathMatcher.match("/api/v1/rooms/*/statuses/*",oriUri)) resUri = "/api/v1/rooms/*/statuses/*";
         else resUri = oriUri;
 
         Object obj = redisTemplate.opsForHash().get("AUTH:RESOURCE_ROLES_MAP", resUri);

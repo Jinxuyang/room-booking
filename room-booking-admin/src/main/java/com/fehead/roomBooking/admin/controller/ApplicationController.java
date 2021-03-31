@@ -44,12 +44,9 @@ public class ApplicationController extends BaseController {
     @ApiOperation(value = "获取指定id申请")
     @GetMapping("/{applicationId}")
     public CommonReturnType getApplication(@PathVariable("applicationId") Integer applicationId){
-        Application applicationById = applicationService.getApplicationById(applicationId);
-        if (applicationById!=null){
-
-            CommonReturnType.create(applicationById);
-        }
-        return CommonReturnType.create("fail");
+        Application application = applicationService.getApplicationById(applicationId);
+        if (application == null) return CommonReturnType.create(null,"failed");
+        else return CommonReturnType.create(application);
     }
 
     /**

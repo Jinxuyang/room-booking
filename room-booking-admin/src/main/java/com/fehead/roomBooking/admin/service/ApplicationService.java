@@ -32,7 +32,7 @@ public class ApplicationService {
      */
     public Boolean addApplication(Application application){
         if (!(this.isDuplicate(application))) {
-            Boolean aBoolean = this.roomStatus(application, 0);
+            this.roomStatus(application, 0);
             int insert = applicationMapper.insert(application);
             if (insert != 0) {
                 log.info("申请增加成功");
@@ -50,7 +50,7 @@ public class ApplicationService {
     public List<Application> getAllApplication(int pageNum){
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
-         applicationMapper.selectPage(applicationPage,null);
+        applicationMapper.selectPage(applicationPage,null);
         List<Application> records = applicationPage.getRecords();
         records.forEach(record->record.setRoom(roomMapper.selectById(record.getRoomId())));
         return records;
@@ -58,16 +58,18 @@ public class ApplicationService {
 
     //按照id返回
     public Application getApplicationById(int id){
-        return applicationMapper.selectById(id);
+        Application application =applicationMapper.selectById(id);
+        application.setRoom(roomMapper.selectById(application.getRoomId()));
+        return application;
     }
 
     //按照条件返回信息相同的application的list
     public List<Application> getApplicationByMap(Map<String,String> map){
-        QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
+        QueryWrapper<Application> queryWrapper = new QueryWrapper<>();
         map.forEach(queryWrapper::like);
         List<Application> applications = applicationMapper.selectList(queryWrapper);
         applications.forEach(application -> application.setRoom(roomMapper.selectById(application.getRoomId())));
-        return applications ;
+        return applications;
     }
     //删除id对应的申请和房间状态
     public Boolean deleteById( Integer id){
