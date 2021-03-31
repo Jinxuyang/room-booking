@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: enc
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials,RETAIN_FIRST
+      routes:
+        - id: room-booking-admin
+          uri: lb://room-booking-admin
+          predicates:
+            - Path=/api/v1/**
+            - Query=role,admin
+            - Method=GET,POST,PUT,DELETE
+        - id: room-booking-user
+          uri: lb://room-booking-user
+          predicates:
+            - Path=/api/v1/**
+            - Query=role,user
+            - Method=GET,POST,PUT
+        - id: room-booking-oauth2
+          uri: lb://room-booking-oauth2
+          predicates:
+            - Path=/api/v1/*/login
+  application:
+    name: room-booking-gateway
+server:
+  port: 8000

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: room-booking-oauth2
+  profiles:
+    active: enc
+server:
+  port: 8001
