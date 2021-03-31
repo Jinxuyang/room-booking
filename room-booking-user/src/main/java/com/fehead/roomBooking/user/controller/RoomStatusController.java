@@ -5,7 +5,8 @@ import com.fehead.roomBooking.common.entity.RoomStatus;
 import com.fehead.roomBooking.common.response.CommonReturnType;
 import com.fehead.roomBooking.user.service.RoomStatusService;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
@@ -16,13 +17,14 @@ public class RoomStatusController extends BaseController {
         this.roomStatusService = roomStatusService;
     }
 
-    /*
-        获取指定id教室的所有状态信息
-         */
+    /**
+     * 获取指定id教室的所有状态信息
+     */
     @GetMapping("/{roomId}/statuses")
-    public CommonReturnType getAllRoomStatus(@PathVariable("roomId") Integer roomId){
-        List<RoomStatus> roomStatusById = roomStatusService.getRoomStatusByRoomId(roomId);
-        return  CommonReturnType.create(roomStatusById);
+    public CommonReturnType getAllRoomStatus(@PathVariable("roomId") Integer roomId,
+                                             @RequestParam(name = "date",required = false) String date) throws ParseException {
+        if (date == null) return CommonReturnType.create(roomStatusService.getRoomStatusByRoomId(roomId));
+        else return CommonReturnType.create(roomStatusService.getRoomStatusMonthly(date,roomId));
     }
 
     @GetMapping("/{roomId}/statuses/{StatusId}")

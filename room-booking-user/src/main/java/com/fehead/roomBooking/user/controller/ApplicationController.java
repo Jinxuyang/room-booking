@@ -16,13 +16,12 @@ public class ApplicationController extends BaseController {
 
     @GetMapping
     public CommonReturnType getApplication( Integer userId, Integer pageNum ){
-
-   if (userId==null){
-       throw  new RuntimeException("userId不能为空");
-   }else  if (pageNum==null){
-       throw  new RuntimeException("pageNum不能为空");
-   }else
-        return CommonReturnType.create( applicationService.getApplication(userId,pageNum));
+        if (userId==null){
+           throw  new RuntimeException("userId不能为空");
+        }else  if (pageNum==null){
+           throw  new RuntimeException("pageNum不能为空");
+        }else
+            return CommonReturnType.create( applicationService.getApplication(userId,pageNum));
     }
 
     /*
@@ -35,7 +34,6 @@ public class ApplicationController extends BaseController {
             return CommonReturnType.create("增加成功");
         }
             return CommonReturnType.create("增加失败");
-
     }
     /*
     修改申请modify
@@ -49,6 +47,5 @@ public class ApplicationController extends BaseController {
         }else {
             return CommonReturnType.create("修改失败");
         }
-
     }
 }
