@@ -11,6 +11,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -32,6 +34,7 @@ public class ApplicationController extends BaseController {
         if (pageNum==null){
             throw new RuntimeException("pageNum参数缺失");
         }
+
         return   CommonReturnType.create(applicationService.getAllApplication(pageNum));
 
     }

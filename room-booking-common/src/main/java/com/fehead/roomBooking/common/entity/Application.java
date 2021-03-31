@@ -29,7 +29,7 @@ public class Application implements Serializable {
    private Timestamp applicationStamp;
    @NotNull(message = "申请房间不能为空")
    private Integer roomId;
-   //申请审批状态
+   //申请审批状态 0 1 2 未审核 通过 已使用
    @NotNull(message = "状态不能为空")
    private Integer status;
    //表单数据

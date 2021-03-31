@@ -26,5 +26,9 @@ public class RoomService {
             return false;
         }
     }
+    //查询房间
+    public Room getRoomById(Integer id){
+        return roomMapper.selectById(id);
+    }
 
 }

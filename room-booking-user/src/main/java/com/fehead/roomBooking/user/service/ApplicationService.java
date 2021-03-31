@@ -67,6 +67,13 @@ public class ApplicationService {
         if (roomStatuses.size()==0){
             log.info("申请未重复");
             return  false;
+        }else {
+            for (RoomStatus roomStatus : roomStatuses){
+                if ( roomStatus.getStatus()==0){
+                    log.info("房间已经使用");
+                    return true;
+                }
+            }
         }
         return true;
     }

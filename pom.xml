@@ -15,7 +15,6 @@
         <module>room-booking-user</module>
         <module>room-booking-oauth2</module>
         <module>room-booking-gateway</module>
-        <module>room-booking-test</module>
     </modules>
 
     <parent>
