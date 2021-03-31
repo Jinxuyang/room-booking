@@ -2,17 +2,14 @@ package com.fehead.roomBooking.admin.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fehead.roomBooking.admin.mapper.ApplicationMapper;
 import com.fehead.roomBooking.admin.mapper.RoomMapper;
+import com.fehead.roomBooking.admin.mapper.RoomStatusMapper;
 import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.common.entity.RoomStatus;
-import com.fehead.roomBooking.admin.mapper.ApplicationMapper;
-import com.fehead.roomBooking.admin.mapper.RoomStatusMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +32,7 @@ public class ApplicationService {
      */
     public Boolean addApplication(Application application){
         if (!(this.isDuplicate(application))) {
-            Boolean aBoolean = this.roomStatus(application, 0);
+            this.roomStatus(application, 0);
             int insert = applicationMapper.insert(application);
             if (insert != 0) {
                 log.info("申请增加成功");
@@ -53,7 +50,7 @@ public class ApplicationService {
     public List<Application> getAllApplication(int pageNum){
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
-         applicationMapper.selectPage(applicationPage,null);
+        applicationMapper.selectPage(applicationPage,null);
         List<Application> records = applicationPage.getRecords();
         records.forEach(record->record.setRoom(roomMapper.selectById(record.getRoomId())));
         return records;
@@ -61,16 +58,18 @@ public class ApplicationService {
 
     //按照id返回
     public Application getApplicationById(int id){
-        return applicationMapper.selectById(id);
+        Application application =applicationMapper.selectById(id);
+        application.setRoom(roomMapper.selectById(application.getRoomId()));
+        return application;
     }
 
     //按照条件返回信息相同的application的list
     public List<Application> getApplicationByMap(Map<String,String> map){
-        QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
+        QueryWrapper<Application> queryWrapper = new QueryWrapper<>();
         map.forEach(queryWrapper::like);
         List<Application> applications = applicationMapper.selectList(queryWrapper);
         applications.forEach(application -> application.setRoom(roomMapper.selectById(application.getRoomId())));
-        return applications ;
+        return applications;
     }
     //删除id对应的申请和房间状态
     public Boolean deleteById( Integer id){
@@ -146,8 +145,8 @@ public class ApplicationService {
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
         roomStatus.setRoomId(application.getRoomId());
-        roomStatus.setStartStamp(new Timestamp( application.getStartStamp()));;
-        roomStatus.setEndStamp(new Timestamp(application.getEndStamp()));
+        roomStatus.setStartStamp(application.getStartStamp());
+        roomStatus.setEndStamp(application.getEndStamp());
         //通过则房间不可用
         if (application.getStatus().equals(1)){
             roomStatus.setStatus(1);

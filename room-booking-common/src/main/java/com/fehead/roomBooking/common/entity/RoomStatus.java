@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.security.Principal;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -24,9 +22,9 @@ public class RoomStatus {
     //是否需要userid 不需要
    // private Integer userId;
     @NotNull(message = "开始时间不能为空")
-    private Timestamp startStamp;
+    private Long startStamp;
     @NotNull(message = "结束时间不能为空")
-    private Timestamp endStamp;
+    private Long endStamp;
     //0 不可用 1 可用
     @NotNull(message = "状态不能为空")
     private Integer status;

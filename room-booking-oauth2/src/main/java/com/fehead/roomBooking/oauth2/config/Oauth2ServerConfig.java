@@ -1,5 +1,7 @@
 package com.fehead.roomBooking.oauth2.config;
 
+import com.fehead.roomBooking.oauth2.component.CustomExceptionTranslator;
+import com.fehead.roomBooking.oauth2.component.UserDetailServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +37,11 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     @Qualifier("jwtAccessTokenConverter")
     private final JwtAccessTokenConverter converter;
+    @Autowired
+    private final CustomExceptionTranslator customExceptionTranslator;
 
+    @Autowired
+    private final UserDetailServiceImpl userDetailsService;
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         super.configure(security);
@@ -49,7 +55,7 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(864000)
                 .scopes("all")//配置申请的权限范围
-                .authorizedGrantTypes("password");
+                .authorizedGrantTypes("password","refresh_token");
 
     }
 
@@ -58,6 +64,8 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore)
                 .accessTokenConverter(converter)
-                .pathMapping("/oauth/token","/admin/login");
+                .pathMapping("/oauth/token","/api/v1/admin/login")
+                .exceptionTranslator(customExceptionTranslator)
+                .userDetailsService(userDetailsService);
     }
 }

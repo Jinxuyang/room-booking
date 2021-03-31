@@ -11,7 +11,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -24,12 +23,12 @@ id 申请人id 对应的房间状态id 申请时间 房间id
 public class Application implements Serializable {
    @TableId(type= IdType.AUTO)
    private   Integer id;
-   private  Integer userId;
+   private  Integer userId;//
    private  Integer roomStatusId;
    @NotNull(message = "申请时间不能为空")
-   private Timestamp applicationStamp;
+   private Long applicationStamp;
    @NotNull(message = "申请房间不能为空")
-   private Integer roomId;
+   private Integer roomId;//
    @TableField(exist = false)
    private Room room;
    //申请审批状态 0 1 2 未审核 通过 已使用
@@ -55,29 +54,10 @@ public class Application implements Serializable {
    @NotNull(message = "学号/工号不能为空")
    private String  jobNumber;
    @NotNull(message = "开始时间不能为空")
-   private Timestamp startStamp;
+   private Long startStamp;
    @NotNull(message = "结束时间不能为空")
-   private Timestamp endStamp;
+   private Long endStamp;
    @NotNull(message = "申请原因不能为空")
    private String  reasonsForApplication;
    private String remarks;
-   private String equipment;
-
-   public Long getApplicationStamp() {
-      return applicationStamp.getTime();
-   }
-
-   public Long getStartStamp() {
-      return startStamp.getTime();
-   }
-
-   public Long getEndStamp() {
-      return endStamp.getTime();
-   }
-
-   public Application(Integer userId, Integer roomStatusId, Timestamp applicationStamp) {
-      this.userId = userId;
-      this.roomStatusId = roomStatusId;
-      this.applicationStamp = applicationStamp;
-   }
 }

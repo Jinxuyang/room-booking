@@ -8,6 +8,7 @@ import com.fehead.roomBooking.oauth2.service.UserService;
 import com.fehead.roomBooking.oauth2.service.WXLoginService;
 import com.fehead.roomBooking.oauth2.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,8 +20,10 @@ import java.util.HashMap;
  */
 @Service
 public class WXLoginServiceImpl implements WXLoginService {
-    private static final String APPID = "";
-    private static final String SECRET = "";
+    @Value("${weixin.appid}")
+    private String APPID ;
+    @Value("${weixin.secret}")
+    private String SECRET;
     private static final String GRANT_TYPE = "authorization_code";
     private static final String URL = " https://api.weixin.qq.com/sns/jscode2session";
 
@@ -41,16 +44,15 @@ public class WXLoginServiceImpl implements WXLoginService {
         String response = HttpUtil.get(URL,param);
 
         JSONObject jsonObject = JSONUtil.parseObj(response);
-        if ("0".equals(jsonObject.get("errcode"))){
-            String openid = jsonObject.getStr("openid");
-            if (!userService.isExist(openid)){
-                User user = new User();
-                user.setOpenId(openid);
-                userService.save(user);
-            }
-            return jwtUtils.generateToken();
-        } else {
-            throw new Exception("微信登陆失败");
+        if (jsonObject.get("session_key") == null) throw new Exception("微信登陆失败");
+
+        String openid = jsonObject.getStr("openid");
+        if (!userService.isExist(openid)){
+            User user = new User();
+            user.setOpenId(openid);
+            userService.save(user);
         }
+        return jwtUtils.generateToken();
+
     }
 }

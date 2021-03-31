@@ -31,9 +31,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/oauth/**","/logout/**","/rsa/publicKey","/*/login").permitAll()
+                .antMatchers("/oauth/**","/logout/**","/rsa/publicKey","/**/login").permitAll()
                 .anyRequest().authenticated().and()
-                .formLogin().permitAll();
+                .formLogin().permitAll()
+                .and().csrf().disable();
                 //.failureHandler(restfulAuthenticationFailureHandler)
                 //.successHandler(restfulAuthenticationSuccessHandler);
     }
@@ -47,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
+
         return super.authenticationManagerBean();
     }
 }

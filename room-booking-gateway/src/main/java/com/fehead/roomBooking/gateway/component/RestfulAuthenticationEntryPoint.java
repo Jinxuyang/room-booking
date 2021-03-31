@@ -21,13 +21,26 @@ import java.nio.charset.StandardCharsets;
  * @Version 1.0
  */
 @Component
-public class RestAuthenticationEntryPoint implements ServerAuthenticationEntryPoint {
+public class RestfulAuthenticationEntryPoint implements ServerAuthenticationEntryPoint {
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
+        /*WebResponseExceptionTranslator<?> exceptionTranslator = new DefaultWebResponseExceptionTranslator();
+        try {
+            ResponseEntity<?> result = exceptionTranslator.translate(e);
+            if (result.getStatusCode() == HttpStatus.UNAUTHORIZED){
+                ServerHttpRequest request = exchange.getRequest();
+                Map<String,Object> param = new HashMap<>();
+                param.put("grant_type","refresh_token");
+                param.put("refresh_token");
+            }
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }*/
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.OK);
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        String body= JSONUtil.toJsonStr(CommonReturnType.create(e.getMessage()));
+        String body= JSONUtil.toJsonStr(CommonReturnType.create(e.getMessage(),"failed"));
         DataBuffer buffer =  response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
         return response.writeWith(Mono.just(buffer));
     }
