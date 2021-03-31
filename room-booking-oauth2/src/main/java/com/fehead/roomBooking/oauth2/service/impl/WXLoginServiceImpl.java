@@ -19,8 +19,8 @@ import java.util.HashMap;
  */
 @Service
 public class WXLoginServiceImpl implements WXLoginService {
-    private static final String APPID = "";
-    private static final String SECRET = "";
+    private static final String APPID = "wx9fd669c6b50d23ad";
+    private static final String SECRET = "61d3f2d15651b1c45fd47e0e5befb5dd";
     private static final String GRANT_TYPE = "authorization_code";
     private static final String URL = " https://api.weixin.qq.com/sns/jscode2session";
 
@@ -41,16 +41,15 @@ public class WXLoginServiceImpl implements WXLoginService {
         String response = HttpUtil.get(URL,param);
 
         JSONObject jsonObject = JSONUtil.parseObj(response);
-        if ("0".equals(jsonObject.get("errcode"))){
-            String openid = jsonObject.getStr("openid");
-            if (!userService.isExist(openid)){
-                User user = new User();
-                user.setOpenId(openid);
-                userService.save(user);
-            }
-            return jwtUtils.generateToken();
-        } else {
-            throw new Exception("微信登陆失败");
+        if (jsonObject.get("session_key") == null) throw new Exception("微信登陆失败");
+
+        String openid = jsonObject.getStr("openid");
+        if (!userService.isExist(openid)){
+            User user = new User();
+            user.setOpenId(openid);
+            userService.save(user);
         }
+        return jwtUtils.generateToken();
+
     }
 }

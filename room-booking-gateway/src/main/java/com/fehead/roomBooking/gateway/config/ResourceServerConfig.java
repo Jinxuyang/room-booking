@@ -1,7 +1,7 @@
 package com.fehead.roomBooking.gateway.config;
 
 import com.fehead.roomBooking.gateway.component.AuthorizationManager;
-import com.fehead.roomBooking.gateway.component.RestAuthenticationEntryPoint;
+import com.fehead.roomBooking.gateway.component.RestfulAuthenticationEntryPoint;
 import com.fehead.roomBooking.gateway.component.RestfulAccessDeniedHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 public class ResourceServerConfig {
     private final RestfulAccessDeniedHandler restfulAccessDeniedHandler;
-    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestfulAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final AuthorizationManager authorizationManager;
 
     @Bean
