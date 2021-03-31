@@ -62,7 +62,7 @@ public class ApplicationController extends BaseController {
     public CommonReturnType searchApplication(String applicant){
         Map<String,String> map=new HashMap();
         map.put("applicant",applicant);
-        return CommonReturnType.create( applicationService.getApplicationByMap(map));
+        return CommonReturnType.create(applicationService.getApplicationByMap(map));
 
     }
     /**
@@ -76,9 +76,9 @@ public class ApplicationController extends BaseController {
         }
         Boolean addApplication = applicationService.addApplication(application);
         if (addApplication){
-          return   CommonReturnType.create("success");
+          return CommonReturnType.create("success");
         }
-        return   CommonReturnType.create("fail");
+        return CommonReturnType.create("fail");
     }
     /**
     修改指定id申请
