@@ -1,6 +1,7 @@
 package com.fehead.roomBooking.common.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class Application implements Serializable {
    private Timestamp applicationStamp;
    @NotNull(message = "申请房间不能为空")
    private Integer roomId;
+   @TableField(exist = false)
+   private Room room;
    //申请审批状态 0 1 2 未审核 通过 已使用
    @NotNull(message = "状态不能为空")
    private Integer status;
@@ -47,16 +50,16 @@ public class Application implements Serializable {
    private String  email;
    @NotNull(message = "电话不能为空")
    @Pattern(regexp = "^1(3|4|5|7|8)\\d{9}$",message = "手机号码格式错误")
-   private String phone_number;
+   private String phoneNumber;
    //学号 工号
    @NotNull(message = "学号/工号不能为空")
-   private String  job_number;
+   private String  jobNumber;
    @NotNull(message = "开始时间不能为空")
    private Timestamp startStamp;
    @NotNull(message = "结束时间不能为空")
    private Timestamp endStamp;
    @NotNull(message = "申请原因不能为空")
-   private String  reasons_for_application;
+   private String  reasonsForApplication;
    private String remarks;
    private String equipment;
 

@@ -16,5 +16,5 @@ public class Room {
     @TableId(type= IdType.AUTO)
     private Integer id;
     private String roomName;
-    private  String describe;
+    private  String description;
 }

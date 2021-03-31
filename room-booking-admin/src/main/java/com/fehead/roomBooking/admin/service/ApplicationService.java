@@ -2,6 +2,7 @@ package com.fehead.roomBooking.admin.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fehead.roomBooking.admin.mapper.RoomMapper;
 import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.common.entity.RoomStatus;
 import com.fehead.roomBooking.admin.mapper.ApplicationMapper;
@@ -21,10 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ApplicationService {
     private ApplicationMapper applicationMapper;
     private RoomStatusMapper roomStatusMapper;
-    @Autowired
-    public ApplicationService(ApplicationMapper applicationMapper, RoomStatusMapper roomStatusMapper) {
+    private RoomMapper roomMapper;
+
+    public ApplicationService(ApplicationMapper applicationMapper, RoomStatusMapper roomStatusMapper, RoomMapper roomMapper) {
         this.applicationMapper = applicationMapper;
         this.roomStatusMapper = roomStatusMapper;
+        this.roomMapper = roomMapper;
     }
 
     /**
@@ -51,8 +54,9 @@ public class ApplicationService {
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
          applicationMapper.selectPage(applicationPage,null);
-        List<Object> list=new ArrayList<>();
-        return applicationPage.getRecords();
+        List<Application> records = applicationPage.getRecords();
+        records.forEach(record->record.setRoom(roomMapper.selectById(record.getRoomId())));
+        return records;
     }
 
     //按照id返回
@@ -63,12 +67,13 @@ public class ApplicationService {
     //按照条件返回信息相同的application的list
     public List<Application> getApplicationByMap(Map<String,String> map){
         QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
-        queryWrapper.allEq(map);
-    return applicationMapper.selectList(queryWrapper);
+        map.forEach(queryWrapper::like);
+        List<Application> applications = applicationMapper.selectList(queryWrapper);
+        applications.forEach(application -> application.setRoom(roomMapper.selectById(application.getRoomId())));
+        return applications ;
     }
     //删除id对应的申请和房间状态
     public Boolean deleteById( Integer id){
-
         Application application = applicationMapper.selectById(id);
         Integer roomStatusId = application.getRoomStatusId();
         int deleteRoomStatus = roomStatusMapper.deleteById(roomStatusId);

@@ -11,9 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -28,25 +26,22 @@ public class ApplicationController extends BaseController {
     /**
      * 获取所有申请
      */
-    @ApiOperation(value = "get请求调用示例", notes = "invokePost说明")
+    @ApiOperation(value = "获取所有申请")
     @GetMapping
     public CommonReturnType getAllApplication( Integer pageNum){
         if (pageNum==null){
             throw new RuntimeException("pageNum参数缺失");
         }
-
         return   CommonReturnType.create(applicationService.getAllApplication(pageNum));
 
     }
 
     /**
-     *
+     * 获取指定id申请
      * @param applicationId
      * @return
      */
-    /*
-    获取指定id申请
-     */
+    @ApiOperation(value = "获取指定id申请")
     @GetMapping("/{applicationId}")
     public CommonReturnType getApplication(@PathVariable("applicationId") Integer applicationId){
         Application applicationById = applicationService.getApplicationById(applicationId);
@@ -56,9 +51,24 @@ public class ApplicationController extends BaseController {
         }
         return CommonReturnType.create("fail");
     }
-    /*
+
+    /**
+     * 模糊查询
+     * @param applicant
+     * @return
+     */
+    @ApiOperation(value = "模糊查询申请")
+    @GetMapping("/search")
+    public CommonReturnType searchApplication(String applicant){
+        Map<String,String> map=new HashMap();
+        map.put("applicant",applicant);
+        return CommonReturnType.create( applicationService.getApplicationByMap(map));
+
+    }
+    /**
     新增申请
      */
+    @ApiOperation(value = "新增申请")
     @PostMapping
     public CommonReturnType addApplication(@Valid @RequestBody Application application, BindingResult result){
         if (result.hasErrors()){
@@ -70,9 +80,10 @@ public class ApplicationController extends BaseController {
         }
         return   CommonReturnType.create("fail");
     }
-    /*
+    /**
     修改指定id申请
      */
+    @ApiOperation(value = "修改指定id申请")
     @PutMapping("/{applicationId}")
     public CommonReturnType modifyApplication(@PathVariable("applicationId") Integer applicationId,
                                              @Valid  @RequestBody Application application,BindingResult result){
@@ -85,9 +96,10 @@ public class ApplicationController extends BaseController {
         }
         return CommonReturnType.create("fail");
     }
-    /*
+    /**
     删除指定id申请
      */
+    @ApiOperation(value =" 删除指定id申请" )
     @DeleteMapping("/{applicationId}")
     public CommonReturnType deleteApplication(@PathVariable("applicationId") Integer applicationId){
         CommonReturnType returnType=new CommonReturnType();
