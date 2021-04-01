@@ -91,4 +91,52 @@ public class RoomStatusService {
         return res;
 
     }
+    //日期 id
+    //返回被占用数 和具体时间 []
+    //基本信息 天 房间
+
+    /**
+     *
+     * @param dateStr
+     * @param roomId
+     * @return  返回被占用数 和具体时间 []
+     * @throws ParseException
+     */
+    public Map<String,Object> getRoomStatusByDay(String dateStr,Integer roomId) throws ParseException {
+        final long SECOND_OF_DAY = 86400;
+        Map<String,Object> map=new HashMap<>();
+        map.put("roomId",roomId);
+        map.put("dateStr",dateStr);
+        //查询某天的状态
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = format.parse(dateStr);
+        long timeStamp = date.getTime();
+        QueryWrapper<RoomStatus> queryWrapper=new QueryWrapper<>();
+        queryWrapper.between("start_stamp",timeStamp,timeStamp+SECOND_OF_DAY );
+        List<RoomStatus> roomStatuses = roomStatusMapper.selectList(queryWrapper);
+        boolean[] dayStatus = new boolean[4];
+        //         □9：00-11：00
+        //         □14：00-16：00
+        //         □16：00-18：00
+        //         □18：00-20：00
+        //0 不可用 1 可用
+
+        roomStatuses.forEach(roomStatus -> {
+            Long startTime = roomStatus.getStartStamp();
+            Long endTime= roomStatus.getEndStamp();
+//
+//            if (startTime >= todayTime+(9*3600)&&endTime<=timeStamp) dayStatus[0] = true;
+//            else if (startTime >= todayTime+(14*3600)) dayStatus[1] = true;
+//            else if (startTime >= todayTime+(16*3600)) dayStatus[2] = true;
+//            else if (startTime >= todayTime+(18*3600)) dayStatus[3] = true;
+//
+//            if (endTime <= todayTime+(11*3600)) dayStatus[0] = true;
+//            else if (endTime <= todayTime+(16*3600)) dayStatus[1] = true;
+//            else if (endTime <= todayTime+(18*3600)) dayStatus[2] = true;
+//            else if (endTime <= todayTime+(20*3600)) dayStatus[3] = true;
+
+        });
+
+        return map;
+    }
 }
