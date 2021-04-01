@@ -88,6 +88,7 @@ public class ApplicationService {
     public Boolean modifyApplication(Integer id, Application application) {
 //        this.isParamEnough(application);
         application.setId(id);
+        //新增和修改时间时检查时间重复
         if (!this.isDuplicate(application)){
             int update = applicationMapper.updateById(application);
             //修改对应的房间状态
@@ -116,6 +117,11 @@ public class ApplicationService {
             log.info("申请未重复");
           return false;
         }else {
+//            for (RoomStatus roomStatus : roomStatuses){
+//                if(roomStatus.getId().equals(application.getId())){
+//                    return false;
+//                }
+//            }
          for (RoomStatus roomStatus : roomStatuses){
            if ( roomStatus.getStatus()==0){
                log.info("房间已经使用");

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -80,7 +81,7 @@ public class ApplicationService {
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
         roomStatus.setRoomId(application.getRoomId());
-        roomStatus.setStartStamp(application.getStartStamp());;
+        roomStatus.setStartStamp( application.getStartStamp());;
         roomStatus.setEndStamp(application.getEndStamp());
         roomStatus.setStatus(1);
         int insert=0;
