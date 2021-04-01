@@ -81,8 +81,8 @@ public class ApplicationService {
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
         roomStatus.setRoomId(application.getRoomId());
-        roomStatus.setStartStamp(new Timestamp( application.getStartStamp()));;
-        roomStatus.setEndStamp(new Timestamp(application.getEndStamp()));
+        roomStatus.setStartStamp( application.getStartStamp());;
+        roomStatus.setEndStamp(application.getEndStamp());
         roomStatus.setStatus(1);
         int insert=0;
         switch (i){
