@@ -33,4 +33,12 @@ public class RoomStatusController extends BaseController {
         RoomStatus roomStatusById = roomStatusService.getRoomStatusById(roomId,StatusId);
         return  CommonReturnType.create(roomStatusById);
     }
+    /**
+     * 获取指定id教室的某天的可用状态
+     */
+    @GetMapping("/{roomId}")
+    public CommonReturnType getRoomStatusByDate(@PathVariable("roomId") Integer roomId,
+                                                String dateStr) throws ParseException {
+        return CommonReturnType.create(roomStatusService.getRoomStatusByDate(dateStr,roomId));
+    }
 }

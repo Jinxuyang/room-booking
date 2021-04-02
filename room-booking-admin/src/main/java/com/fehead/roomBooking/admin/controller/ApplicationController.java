@@ -3,6 +3,7 @@ package com.fehead.roomBooking.admin.controller;
 import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.admin.service.ApplicationService;
 import com.fehead.roomBooking.common.controller.BaseController;
+import com.fehead.roomBooking.common.entity.ApplicationReturnType;
 import com.fehead.roomBooking.common.response.CommonReturnType;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,15 @@ public class ApplicationController extends BaseController {
 
     /**
      * 获取所有申请
+     * @return
      */
     @ApiOperation(value = "获取所有申请")
     @GetMapping
-    public CommonReturnType getAllApplication( Integer pageNum){
+    public ApplicationReturnType getAllApplication(Integer pageNum){
         if (pageNum==null){
             throw new RuntimeException("pageNum参数缺失");
         }
-        return   CommonReturnType.create(applicationService.getAllApplication(pageNum));
+        return   applicationService.getAllApplication(pageNum);
 
     }
 

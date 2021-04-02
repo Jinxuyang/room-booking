@@ -6,10 +6,13 @@ import com.fehead.roomBooking.admin.mapper.ApplicationMapper;
 import com.fehead.roomBooking.admin.mapper.RoomMapper;
 import com.fehead.roomBooking.admin.mapper.RoomStatusMapper;
 import com.fehead.roomBooking.common.entity.Application;
+import com.fehead.roomBooking.common.entity.ApplicationReturnType;
 import com.fehead.roomBooking.common.entity.RoomStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,19 +50,43 @@ public class ApplicationService {
         }
     }
     //返回所有application的list  分页
-    public List<Application> getAllApplication(int pageNum){
+    public ApplicationReturnType getAllApplication(int pageNum){
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
         applicationMapper.selectPage(applicationPage,null);
-        List<Application> records = applicationPage.getRecords();
-        records.forEach(record->record.setRoom(roomMapper.selectById(record.getRoomId())));
-        return records;
+        List<Application> applications = applicationPage.getRecords();
+        long time = new Date().getTime();
+        applications.forEach(application -> {
+            application.setRoom(roomMapper.selectById(application.getRoomId()));
+            //返回前检查申请是否失效
+            if(application.getEndStamp()<=time){
+                //失效则更改状态 3
+                application.setStatus(3);
+                applicationMapper.updateById(application);
+            }
+
+        });
+
+        //一共多少条 多少页
+        ApplicationReturnType returnType = new ApplicationReturnType();
+        returnType.setData(applications);
+        returnType.setTotal(applicationPage.getTotal());
+        returnType.setPageTotal(applicationPage.getPages());
+        returnType.setStatus("success");
+        return returnType;
     }
 
     //按照id返回
     public Application getApplicationById(int id){
         Application application =applicationMapper.selectById(id);
         application.setRoom(roomMapper.selectById(application.getRoomId()));
+        long time = new Date().getTime();
+        //返回前检查申请是否失效
+        if(application.getEndStamp()<=time){
+            //失效则更改状态 3
+            application.setStatus(3);
+            applicationMapper.updateById(application);
+        }
         return application;
     }
 
@@ -68,7 +95,16 @@ public class ApplicationService {
         QueryWrapper<Application> queryWrapper = new QueryWrapper<>();
         map.forEach(queryWrapper::like);
         List<Application> applications = applicationMapper.selectList(queryWrapper);
-        applications.forEach(application -> application.setRoom(roomMapper.selectById(application.getRoomId())));
+        long time = new Date().getTime();
+        applications.forEach(application -> {
+            application.setRoom(roomMapper.selectById(application.getRoomId()));
+            //返回前检查申请是否失效
+            if(application.getEndStamp()<=time){
+                //失效则更改状态 3
+                application.setStatus(3);
+                applicationMapper.updateById(application);
+            }
+        });
         return applications;
     }
     //删除id对应的申请和房间状态
@@ -122,7 +158,9 @@ public class ApplicationService {
 //                    return false;
 //                }
 //            }
-         for (RoomStatus roomStatus : roomStatuses){
+            //如果只有相同id的一条数据 则返回false
+            RoomStatus roomSt= roomStatusMapper.selectById(application.getRoomStatusId());
+            for (RoomStatus roomStatus : roomStatuses){
            if ( roomStatus.getStatus()==0){
                log.info("房间已经使用");
                return true;
