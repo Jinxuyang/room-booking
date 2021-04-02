@@ -14,7 +14,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 
 @Data
 @AllArgsConstructor
@@ -37,7 +36,6 @@ public class Application implements Serializable {
    @TableField(exist = false)
    private Room room;
    //申请审批状态 0 1 2 未审核 通过 已使用
-   @NotNull(message = "状态不能为空",groups = {Update.class})
    @TableField(fill = FieldFill.INSERT)
    private Integer status;
    //表单数据
