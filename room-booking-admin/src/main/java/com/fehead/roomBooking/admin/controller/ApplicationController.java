@@ -85,10 +85,7 @@ public class ApplicationController extends BaseController {
     @ApiOperation(value = "修改指定id申请")
     @PutMapping("/{applicationId}")
     public CommonReturnType modifyApplication(@PathVariable("applicationId") Integer applicationId,
-                                             @Valid  @RequestBody Application application,BindingResult result){
-        if (result.hasErrors()){
-            throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
-        }
+                                              @Valid @RequestBody Application application){
         Boolean changeApplication = applicationService.modifyApplication(applicationId, application);
         if (changeApplication){
             return CommonReturnType.create("success");
@@ -101,7 +98,6 @@ public class ApplicationController extends BaseController {
     @ApiOperation(value =" 删除指定id申请" )
     @DeleteMapping("/{applicationId}")
     public CommonReturnType deleteApplication(@PathVariable("applicationId") Integer applicationId){
-        CommonReturnType returnType=new CommonReturnType();
         Boolean delete = applicationService.deleteById(applicationId);
         if (delete){
             return CommonReturnType.create("success");

@@ -125,19 +125,17 @@ public class ApplicationService {
 //        this.isParamEnough(application);
         application.setId(id);
         //新增和修改时间时检查时间重复
-        if (!this.isDuplicate(application)){
-            int update = applicationMapper.updateById(application);
-            //修改对应的房间状态
-            this.roomStatus(application,1);
-            if (update!=0){
-                log.info("管理员修改了请求,id为"+id);
-                return true;
-            }else {
-                return false;
-            }
+
+        int update = applicationMapper.updateById(application);
+        //修改对应的房间状态
+        this.roomStatus(application,1);
+        if (update!=0){
+            log.info("管理员修改了请求,id为"+id);
+            return true;
         }else {
-             throw new RuntimeException("申请时间重复");
+            return false;
         }
+
     }
 
     //检查新申请的时间是否重复
@@ -188,6 +186,7 @@ public class ApplicationService {
     //添加或修改对应房间状态 0 1
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
+        roomStatus.setId(application.getRoomStatusId());
         roomStatus.setRoomId(application.getRoomId());
         roomStatus.setStartStamp(application.getStartStamp());
         roomStatus.setEndStamp(application.getEndStamp());

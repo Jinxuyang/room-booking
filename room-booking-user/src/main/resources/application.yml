@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: room-booking-user
+  profiles:
+    active: enc
