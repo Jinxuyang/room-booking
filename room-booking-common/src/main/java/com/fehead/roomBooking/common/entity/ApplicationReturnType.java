@@ -20,6 +20,7 @@ public class ApplicationReturnType extends FeheadResponse {
     private String status;
 private Long pageTotal;
 private  Long total;
+private int unhandled;
 
     public static CommonReturnType create(Object result) {
         return CommonReturnType.create(result, "success");

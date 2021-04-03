@@ -2,10 +2,12 @@ package com.fehead.roomBooking.user.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.roomBooking.common.entity.RoomStatus;
+import com.fehead.roomBooking.user.mapper.AvailableDayMapper;
 import com.fehead.roomBooking.user.mapper.RoomStatusMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.swing.BakedArrayList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,8 @@ import java.util.*;
 @Slf4j
 public class RoomStatusService {
     private RoomStatusMapper roomStatusMapper;
+    @Autowired
+    private AvailableDayMapper availableDayMapper;
 
     @Autowired
     public RoomStatusService(RoomStatusMapper roomStatusMapper) {
@@ -33,56 +37,92 @@ public class RoomStatusService {
         return roomStatusMapper.selectOne(queryWrapper);
     }
 
+    /**
+     * 查看每月的情况
+     * @param dateStr
+     * @param roomId
+     * @return
+     * @throws ParseException
+     */
     public Map<String,List<String>> getRoomStatusMonthly(String dateStr,int roomId) throws ParseException {
-        final int SECOND_OF_DAY = 86400;
+        final int SECOND_OF_DAY = 86400000;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
         Date date = format.parse(dateStr);
         long timeStamp = date.getTime();
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int dayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         QueryWrapper<RoomStatus> wrapper = new QueryWrapper<>();
-        wrapper.eq("id",roomId)
+        wrapper.eq("room_id",roomId)
                 .between("start_stamp",timeStamp,timeStamp+ (long) SECOND_OF_DAY *dayOfMonth);
-
         List<String> full = new ArrayList<>(dayOfMonth);
         List<String> notFull = new ArrayList<>(dayOfMonth);
-
         List<RoomStatus> list = roomStatusMapper.selectList(wrapper);
-        boolean[] dayStatus = new boolean[4];
-        for (int i = 0; i < dayOfMonth; i++) {
-            Arrays.fill(dayStatus,false);
-            int finalI = i;
-            list.stream()
-                    .filter(s -> s.getStartStamp() >= timeStamp+((long) SECOND_OF_DAY *(finalI - 1)) && s.getEndStamp() <= timeStamp+((long) finalI *SECOND_OF_DAY))
-                    .forEach(r ->{
-                        long startTime = r.getStartStamp();
-                        long endTime = r.getEndStamp();
-                        long todayTime = timeStamp+((long) SECOND_OF_DAY *(finalI - 1));
 
-                        if (startTime >= todayTime+(9*3600)) dayStatus[0] = true;
-                        else if (startTime >= todayTime+(14*3600)) dayStatus[1] = true;
-                        else if (startTime >= todayTime+(16*3600)) dayStatus[2] = true;
-                        else if (startTime >= todayTime+(18*3600)) dayStatus[3] = true;
+        //whirabbit
+        Map<Integer,List> map=new HashMap<>();
+        list.forEach(roomStatus -> {
+            Long startTime = roomStatus.getStartStamp();
+            Long endTime= roomStatus.getEndStamp();
+            calendar.setTime(new Date(roomStatus.getStartStamp()));
+            //具体某天
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            //这一天开始的时间戳
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            long todayTime=0;
+            try {
+                 todayTime= format1.parse(dateStr+"-"+day).getTime();
+            } catch (ParseException e) {
+                log.warn("时间转换出错");
+            }
 
-                        if (endTime <= todayTime+(11*3600)) dayStatus[0] = true;
-                        else if (endTime <= todayTime+(16*3600)) dayStatus[1] = true;
-                        else if (endTime <= todayTime+(18*3600)) dayStatus[2] = true;
-                        else if (endTime <= todayTime+(20*3600)) dayStatus[3] = true;
+            if (startTime >= todayTime+(9*3600000)&&endTime<=todayTime+(11*3600000)) {
+                if( map.containsKey(day)){
+                    map.get(day).add(1);
+                }else {
+                    List<Integer> list1=new ArrayList<>();
+                    list1.add(1);
+                    map.put(day,list1);
+                }
+            }
 
-                        boolean isFull = true;
-                        for (int j = 0; j < 4; j++) {
-                            if (!dayStatus[j]) {
-                                isFull = false;
-                                break;
-                            }
-                        }
-                        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-                        if (isFull) full.add(format1.format(timeStamp+((long) finalI *SECOND_OF_DAY)));
-                        else notFull.add(format1.format(timeStamp+((long) finalI *SECOND_OF_DAY)));
-                    });
-        }
+            else if (startTime >= todayTime+(14*3600000)&&endTime <= todayTime+(16*3600000) ) {
+               if( map.containsKey(day)){
+                   map.get(day).add(2);
+               }else {
+                   List<Integer> list1=new ArrayList<>();
+                   list1.add(2);
+                   map.put(day,list1);
+               }
+            }
+            else if (startTime >= todayTime+(16*3600000)&&endTime <= todayTime+(18*3600000) ) {
+                if( map.containsKey(day)){
+                    map.get(day).add(3);
+                }else {
+                    List<Integer> list1=new ArrayList<>();
+                    list1.add(3);
+                    map.put(day,list1);
+                }
+            }
+
+            else if (startTime >= todayTime+(18*3600000)&&endTime <= todayTime+(20*3600000) ){
+                if( map.containsKey(day)){
+                    map.get(day).add(4);
+                }else {
+                    List<Integer> list1=new ArrayList<>();
+                    list1.add(4);
+                    map.put(day,list1);
+                }
+            }
+        });
+
+        map.forEach((integer, list1) -> {
+            if (list1.size()>=4){
+                full.add(dateStr+"-"+integer);
+            }else if(list1.size()>0) {
+                notFull.add(dateStr+"-"+integer);
+            }
+        });
 
         Map<String,List<String>> res = new HashMap<>();
         res.put("full",full);
@@ -91,15 +131,11 @@ public class RoomStatusService {
         return res;
 
     }
-    //日期 id
-    //返回被占用数 和具体时间 []
-    //基本信息 天 房间
-
     /**
      *
      * @param dateStr
      * @param roomId
-     * @return  返回被占用数 和具体时间 []
+     * @return  返回被占用数 和占用的具体时间 []
      * @throws ParseException
      */
     public Map<String,Object> getRoomStatusByDate(String dateStr,Integer roomId) throws ParseException {
@@ -110,26 +146,30 @@ public class RoomStatusService {
         //查询某天的状态
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date date = format.parse(dateStr);
-        long todayTime= date.getTime();
+        //有问题
+        long todayTime=date.getTime();
         QueryWrapper<RoomStatus> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("room_id",roomId).between("start_stamp",todayTime,todayTime+SECOND_OF_DAY );
         List<RoomStatus> roomStatuses = roomStatusMapper.selectList(queryWrapper);
-        boolean[] dayStatus = new boolean[4];
+      //  int [] dayStatus = new int[4];
+        List<Integer>  dayStatus=new ArrayList<>();
         roomStatuses.forEach(roomStatus -> {
             Long startTime = roomStatus.getStartStamp();
             Long endTime= roomStatus.getEndStamp();
 //
-            if (startTime >= todayTime+(9*3600)&&endTime<=todayTime+(11*3600)) dayStatus[0] = true;
-            else if (startTime >= todayTime+(14*3600)&&endTime <= todayTime+(16*3600) ) dayStatus[1] = true;
-            else if (startTime >= todayTime+(16*3600)&&endTime <= todayTime+(18*3600) ) dayStatus[2] = true;
-            else if (startTime >= todayTime+(18*3600)&&endTime <= todayTime+(20*3600) ) dayStatus[3] = true;
+            if (startTime >= todayTime+(9*3600)&&endTime<=todayTime+(11*3600)) dayStatus.add(1);
+            else if (startTime >= todayTime+(14*3600000)&&endTime <= todayTime+(16*3600000) ) dayStatus.add(2);
+            else if (startTime >= todayTime+(16*3600000)&&endTime <= todayTime+(18*3600000) ) dayStatus.add(3);
+            else if (startTime >= todayTime+(18*3600000)&&endTime <= todayTime+(20*3600000) ) dayStatus.add(4);
         });
-        int occupyNum =0;
-        for (boolean b: dayStatus){
-             if (b) occupyNum++;
-        }
-        map.put("occupyNum",occupyNum);
+
+        map.put("occupyNum",dayStatus.size());
         map.put("dayStatus",dayStatus);
         return map;
     }
+    //返回每周可用时间
+    public List  availableDay(){
+       return availableDayMapper.selectList(null);
+    }
+
 }

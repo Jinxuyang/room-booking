@@ -34,6 +34,8 @@ public class ApplicationService {
     增加application 同时添加对应房间状态  检查是否与其他申请的时间重合
      */
     public Boolean addApplication(Application application){
+        application.setStatus(0);
+        application.setApplicationStamp(new Date().getTime());
         if (!(this.isDuplicate(application))) {
             this.roomStatus(application, 0);
             int insert = applicationMapper.insert(application);
@@ -53,7 +55,9 @@ public class ApplicationService {
     public ApplicationReturnType getAllApplication(int pageNum){
         //当前页 每页大小
         Page<Application> applicationPage=new Page<>(pageNum,5);
-        applicationMapper.selectPage(applicationPage,null);
+        QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
+        queryWrapper.orderByAsc("status","application_stamp");
+        applicationMapper.selectPage(applicationPage,queryWrapper);
         List<Application> applications = applicationPage.getRecords();
         long time = new Date().getTime();
         applications.forEach(application -> {
@@ -72,10 +76,12 @@ public class ApplicationService {
         returnType.setData(applications);
         returnType.setTotal(applicationPage.getTotal());
         returnType.setPageTotal(applicationPage.getPages());
+        QueryWrapper wrapper=new QueryWrapper();
+        wrapper.eq("status",0);
+        returnType.setUnhandled(applicationMapper.selectList(wrapper).size());
         returnType.setStatus("success");
         return returnType;
     }
-
     //按照id返回
     public Application getApplicationById(int id){
         Application application =applicationMapper.selectById(id);
@@ -89,7 +95,6 @@ public class ApplicationService {
         }
         return application;
     }
-
     //按照条件返回信息相同的application的list
     public List<Application> getApplicationByMap(Map<String,String> map){
         QueryWrapper<Application> queryWrapper = new QueryWrapper<>();
@@ -120,15 +125,20 @@ public class ApplicationService {
             return false;
         }
     }
-    //id 修改application 可能需要修改对应的房间状态
+    /**
+     * id 修改application 可能需要修改对应的房间状态
+     * @param id
+     * @param application
+     * @return
+     */
     public Boolean modifyApplication(Integer id, Application application) {
-//        this.isParamEnough(application);
         application.setId(id);
         //新增和修改时间时检查时间重复
-
-        int update = applicationMapper.updateById(application);
+        Application oldApplication=applicationMapper.selectById(application.getId());
+        application.setRoomStatusId(oldApplication.getRoomStatusId());
         //修改对应的房间状态
         this.roomStatus(application,1);
+        int update = applicationMapper.updateById(application);
         if (update!=0){
             log.info("管理员修改了请求,id为"+id);
             return true;
@@ -151,22 +161,16 @@ public class ApplicationService {
             log.info("申请未重复");
           return false;
         }else {
-//            for (RoomStatus roomStatus : roomStatuses){
-//                if(roomStatus.getId().equals(application.getId())){
-//                    return false;
-//                }
-//            }
+            //逻辑问题
             //如果只有相同id的一条数据 则返回false
-            RoomStatus roomSt= roomStatusMapper.selectById(application.getRoomStatusId());
             for (RoomStatus roomStatus : roomStatuses){
-           if ( roomStatus.getStatus()==0){
-               log.info("房间已经使用");
-               return true;
-           }
-         }
+                if ( roomStatus.getStatus()==0){
+                     log.info("房间已经使用");
+                    return true;
+            }
+            }
         }
-        log.info("申请时间重复");
-        return true;
+        return false;
 
     }
 
@@ -209,11 +213,12 @@ public class ApplicationService {
                 break;
             case 1:
                 insert = roomStatusMapper.updateById(roomStatus);
-                if (insert!=0){
-                    log.info("修改房间状态成功");
-                }else {
-                    throw new  RuntimeException("房间状态修改时出现问题");
-                }
+//                if (insert!=0){
+//                    log.info("修改房间状态成功");
+//                }else {
+//                    throw new  RuntimeException("房间状态修改时出现问题");
+//                }
+                log.info("修改房间状态成功");
                 break;
         }
 
