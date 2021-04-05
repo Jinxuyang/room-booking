@@ -9,7 +9,6 @@ import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.common.entity.ApplicationReturnType;
 import com.fehead.roomBooking.common.entity.RoomStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
