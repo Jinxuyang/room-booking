@@ -32,17 +32,17 @@ public class ApplicationController extends BaseController {
      */
     @PostMapping
     public CommonReturnType addApplication(@Validated(Create.class) @RequestBody Application application){
-        System.out.println(application);
+
         Boolean addApplication = applicationService.addApplication(application);
         if (addApplication){
             return CommonReturnType.create("增加成功");
         }
             return CommonReturnType.create("增加失败");
     }
-    /*
+    /**
     修改申请modify
     */
-    @PutMapping("{applicationId}")
+    @PutMapping("/{applicationId}")
     public CommonReturnType modifyApplication(@Validated(Update.class) @RequestBody Application application,
                                               @PathVariable("applicationId") Integer applicationId){
         Boolean modifyApplication = applicationService.modifyApplication(applicationId, application);
@@ -52,4 +52,14 @@ public class ApplicationController extends BaseController {
             return CommonReturnType.create("修改失败");
         }
     }
+    /**
+     * 取消申请
+     */
+    @DeleteMapping("/{applicationId}/{userId}")
+    public CommonReturnType  cancelApplication(@PathVariable Integer applicationId,
+                                               @PathVariable Integer userId){
+        applicationService.cancel(applicationId,userId);
+        return CommonReturnType.create("已取消");
+    }
+
 }

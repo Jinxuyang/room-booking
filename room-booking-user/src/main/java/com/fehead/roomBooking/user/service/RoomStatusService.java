@@ -139,7 +139,7 @@ public class RoomStatusService {
      * @throws ParseException
      */
     public Map<String,Object> getRoomStatusByDate(String dateStr,Integer roomId) throws ParseException {
-        final long SECOND_OF_DAY = 86400;
+        final long SECOND_OF_DAY = 86400000;
         Map<String,Object> map=new HashMap<>();
         map.put("roomId",roomId);
         map.put("dateStr",dateStr);
@@ -157,10 +157,26 @@ public class RoomStatusService {
             Long startTime = roomStatus.getStartStamp();
             Long endTime= roomStatus.getEndStamp();
 //
-            if (startTime >= todayTime+(9*3600)&&endTime<=todayTime+(11*3600)) dayStatus.add(1);
-            else if (startTime >= todayTime+(14*3600000)&&endTime <= todayTime+(16*3600000) ) dayStatus.add(2);
-            else if (startTime >= todayTime+(16*3600000)&&endTime <= todayTime+(18*3600000) ) dayStatus.add(3);
-            else if (startTime >= todayTime+(18*3600000)&&endTime <= todayTime+(20*3600000) ) dayStatus.add(4);
+            if (startTime >= todayTime+(9*3600000)&&endTime<=todayTime+(11*3600000)){
+               if ( !dayStatus.contains(1)) {
+                    dayStatus.add(1);
+                }
+            }
+            else if (startTime >= todayTime+(14*3600000)&&endTime <= todayTime+(16*3600000) ){
+                if ( !dayStatus.contains(2)) {
+                    dayStatus.add(2);
+                }
+            }
+            else if (startTime >= todayTime+(16*3600000)&&endTime <= todayTime+(18*3600000) ) {
+                if ( !dayStatus.contains(3)) {
+                    dayStatus.add(3);
+                }
+            }
+            else if (startTime >= todayTime+(18*3600000)&&endTime <= todayTime+(20*3600000) ){
+                if ( !dayStatus.contains(4)) {
+                    dayStatus.add(4);
+                }
+            }
         });
 
         map.put("occupyNum",dayStatus.size());

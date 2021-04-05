@@ -33,11 +33,15 @@ public class ApplicationService {
      * @return
      */
     public Boolean addApplication(Application application){
+        Date date=new Date();
+        if (application.getStartStamp()<=date.getTime()){
+            throw new RuntimeException("不能提交过去的时间");
+        }
         if (!this.isRepeat(application)) {
             //先插入获取room_status_id
             this.roomStatus(application,0);
             application.setStatus(0);
-            application.setApplicationStamp(new Date().getTime());
+            application.setApplicationStamp(date.getTime());
             int insert = applicationMapper.insert(application);
             if (insert != 0) {
                 log.info("申请增加成功");
@@ -132,5 +136,19 @@ public class ApplicationService {
             }
         });
         return applications;
+    }
+    /**
+     * 取消申请
+     */
+    public Boolean cancel(Integer applicationId,Integer userId){
+        Application application = applicationMapper.selectById(applicationId);
+        if (application.getUserId().equals(userId)){
+            roomStatusMapper.deleteById(application.getRoomStatusId());
+            log.info("取消对应房间状态");
+            applicationMapper.deleteById(userId);
+            log.info("取消申请");
+            return  true;
+        }
+       throw  new RuntimeException("不能取消他人的申请");
     }
 }

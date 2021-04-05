@@ -34,8 +34,12 @@ public class ApplicationService {
     增加application 同时添加对应房间状态  检查是否与其他申请的时间重合
      */
     public Boolean addApplication(Application application){
+        Date date=new Date();
+        if (application.getStartStamp()<=date.getTime()){
+            throw new RuntimeException("不能提交过去的时间");
+        }
         application.setStatus(0);
-        application.setApplicationStamp(new Date().getTime());
+        application.setApplicationStamp(date.getTime());
         if (!(this.isDuplicate(application))) {
             this.roomStatus(application, 0);
             int insert = applicationMapper.insert(application);
@@ -173,20 +177,6 @@ public class ApplicationService {
         return false;
 
     }
-
-    //检查参数是否足够
-    public Boolean isParamEnough( Application application){
-        if (application.getApplicationStamp()==null||
-                application.getStatus()==null||
-                application.getRoomStatusId()==null||
-                application.getStartStamp()==null||
-                application.getEndStamp()==null||
-                application.getUserId()==null||
-                application.getRoomId()==null){
-           throw  new RuntimeException("数据缺少");
-        }
-        return true;
-    }
     //添加或修改对应房间状态 0 1
     public Boolean roomStatus(Application application, int i){
         RoomStatus roomStatus=new RoomStatus();
@@ -195,11 +185,15 @@ public class ApplicationService {
         roomStatus.setStartStamp(application.getStartStamp());
         roomStatus.setEndStamp(application.getEndStamp());
         //通过则房间不可用
-        if (application.getStatus().equals(1)){
-            roomStatus.setStatus(1);
-        }else {
+        //房间 0 不可用 1 可用
+        if (application.getStatus()>=1){
+            log.info("修改房间为不可用");
             roomStatus.setStatus(0);
+        }else {
+            roomStatus.setStatus(1);
         }
+        System.out.println(application);
+        System.out.println(roomStatus);
         int insert=0;
         switch (i){
             case 0:
