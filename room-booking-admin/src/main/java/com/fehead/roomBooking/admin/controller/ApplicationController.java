@@ -3,11 +3,15 @@ package com.fehead.roomBooking.admin.controller;
 import com.fehead.roomBooking.common.entity.Application;
 import com.fehead.roomBooking.admin.service.ApplicationService;
 import com.fehead.roomBooking.common.controller.BaseController;
+import com.fehead.roomBooking.common.entity.ApplicationReturnType;
 import com.fehead.roomBooking.common.response.CommonReturnType;
+import com.fehead.roomBooking.common.validation.Create;
+import com.fehead.roomBooking.common.validation.Update;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,14 +29,15 @@ public class ApplicationController extends BaseController {
 
     /**
      * 获取所有申请
+     * @return
      */
     @ApiOperation(value = "获取所有申请")
     @GetMapping
-    public CommonReturnType getAllApplication( Integer pageNum){
+    public ApplicationReturnType getAllApplication(Integer pageNum){
         if (pageNum==null){
             throw new RuntimeException("pageNum参数缺失");
         }
-        return   CommonReturnType.create(applicationService.getAllApplication(pageNum));
+        return   applicationService.getAllApplication(pageNum);
 
     }
 
@@ -67,7 +72,7 @@ public class ApplicationController extends BaseController {
      */
     @ApiOperation(value = "新增申请")
     @PostMapping
-    public CommonReturnType addApplication(@Valid @RequestBody Application application, BindingResult result){
+    public CommonReturnType addApplication(@Validated(Create.class) @RequestBody Application application, BindingResult result){
         if (result.hasErrors()){
             throw new RuntimeException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         }
@@ -83,7 +88,7 @@ public class ApplicationController extends BaseController {
     @ApiOperation(value = "修改指定id申请")
     @PutMapping("/{applicationId}")
     public CommonReturnType modifyApplication(@PathVariable("applicationId") Integer applicationId,
-                                              @Valid @RequestBody Application application){
+                                              @Validated(Update.class) @RequestBody Application application){
         Boolean changeApplication = applicationService.modifyApplication(applicationId, application);
         if (changeApplication){
             return CommonReturnType.create("success");

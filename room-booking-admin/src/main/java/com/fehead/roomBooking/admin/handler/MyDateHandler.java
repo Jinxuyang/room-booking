@@ -1,4 +1,4 @@
-package com.fehead.roomBooking.common.handler;
+package com.fehead.roomBooking.admin.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,13 @@ public class MyDateHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
     //log.info("插入填充");
     //this.setFieldValByName("creatTime",Calendar.getInstance().getTime(),metaObject);
+        this.setFieldValByName("application_stamp",new Date().getTime(),metaObject);
+        this.setFieldValByName("status",0,metaObject);
     }
     //更新填充
     @Override
     public void updateFill(MetaObject metaObject) {
       //  log.info("更新填充"+new Date());
-       this.setFieldValByName("application_stamp",new Date().getTime(),metaObject);
-        this.setFieldValByName("status",0,metaObject);
+
     }
 }

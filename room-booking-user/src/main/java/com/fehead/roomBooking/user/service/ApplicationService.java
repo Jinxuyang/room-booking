@@ -3,14 +3,15 @@ package com.fehead.roomBooking.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fehead.roomBooking.common.entity.Application;
+import com.fehead.roomBooking.common.entity.Room;
 import com.fehead.roomBooking.common.entity.RoomStatus;
 import com.fehead.roomBooking.user.mapper.ApplicationMapper;
+import com.fehead.roomBooking.user.mapper.RoomMapper;
 import com.fehead.roomBooking.user.mapper.RoomStatusMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,19 +19,29 @@ import java.util.List;
 public class ApplicationService {
     private ApplicationMapper applicationMapper;
     private RoomStatusMapper roomStatusMapper;
+    private RoomMapper roomMapper;
     @Autowired
-    public ApplicationService(ApplicationMapper applicationMapper, RoomStatusMapper roomStatusMapper) {
+    public ApplicationService(ApplicationMapper applicationMapper, RoomStatusMapper roomStatusMapper, RoomMapper roomMapper) {
         this.applicationMapper = applicationMapper;
         this.roomStatusMapper = roomStatusMapper;
+        this.roomMapper = roomMapper;
     }
 
-    /*
-    增加application 检查是否与其他申请的时间重合
+    /**
+     * 增加application 检查是否与其他申请的时间重合
+     * @param application
+     * @return
      */
     public Boolean addApplication(Application application){
+        Date date=new Date();
+        if (application.getStartStamp()<=date.getTime()){
+            throw new RuntimeException("不能提交过去的时间");
+        }
         if (!this.isRepeat(application)) {
             //先插入获取room_status_id
             this.roomStatus(application,0);
+            application.setStatus(0);
+            application.setApplicationStamp(date.getTime());
             int insert = applicationMapper.insert(application);
             if (insert != 0) {
                 log.info("申请增加成功");
@@ -75,7 +86,7 @@ public class ApplicationService {
                 }
             }
         }
-        return true;
+        return false;
     }
     //添加或修改对应房间状态 0 1
     public Boolean roomStatus(Application application, int i){
@@ -87,8 +98,8 @@ public class ApplicationService {
         int insert=0;
         switch (i){
             case 0:
-                application.setRoomId(roomStatus.getId());
                 insert = roomStatusMapper.insert(roomStatus);
+                application.setRoomStatusId(roomStatus.getId());
                 if (insert!=0){
                     log.info("添加房间状态成功");
                 }else {
@@ -112,6 +123,32 @@ public class ApplicationService {
         QueryWrapper<Application> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("user_id",userId);
         Page<Application> applicationPage=new Page<>(pageNum,5);
-        return applicationMapper.selectPage(applicationPage,queryWrapper).getRecords();
+        Long time=new Date().getTime();
+        List<Application> applications = applicationMapper.selectPage(applicationPage, queryWrapper).getRecords();
+        applications.forEach(application -> {
+            Room room = roomMapper.selectById(application.getRoomId());
+            application.setRoom(room );
+            //返回前检查申请是否失效
+            if(application.getEndStamp()<=time) {
+                //失效则更改状态 3
+                application.setStatus(3);
+                applicationMapper.updateById(application);
+            }
+        });
+        return applications;
+    }
+    /**
+     * 取消申请
+     */
+    public Boolean cancel(Integer applicationId,Integer userId){
+        Application application = applicationMapper.selectById(applicationId);
+        if (application.getUserId().equals(userId)){
+            roomStatusMapper.deleteById(application.getRoomStatusId());
+            log.info("取消对应房间状态");
+            applicationMapper.deleteById(userId);
+            log.info("取消申请");
+            return  true;
+        }
+       throw  new RuntimeException("不能取消他人的申请");
     }
 }

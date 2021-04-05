@@ -20,17 +20,34 @@ public class RoomStatusController extends BaseController {
     /**
      * 获取指定id教室的所有状态信息
      */
-    @GetMapping("/{roomId}/statuses")
+    @GetMapping("/{roomId}/status")
     public CommonReturnType getAllRoomStatus(@PathVariable("roomId") Integer roomId,
                                              @RequestParam(name = "date",required = false) String date) throws ParseException {
         if (date == null) return CommonReturnType.create(roomStatusService.getRoomStatusByRoomId(roomId));
         else return CommonReturnType.create(roomStatusService.getRoomStatusMonthly(date,roomId));
     }
 
-    @GetMapping("/{roomId}/statuses/{StatusId}")
+    @GetMapping("/{roomId}/status/{StatusId}")
     public CommonReturnType getARoomStatusById(@PathVariable("roomId") Integer roomId,
                                                @PathVariable("StatusId")Integer StatusId ){
         RoomStatus roomStatusById = roomStatusService.getRoomStatusById(roomId,StatusId);
         return  CommonReturnType.create(roomStatusById);
+    }
+    /**
+     * 获取指定id教室的某天的可用状态
+     */
+    @GetMapping("/{roomId}")
+    public CommonReturnType getRoomStatusByDate(@PathVariable("roomId") Integer roomId,
+                                                String dateStr) throws ParseException {
+        return CommonReturnType.create(roomStatusService.getRoomStatusByDate(dateStr,roomId));
+    }
+
+    /**
+     * 获取可申请时间
+     * @return
+     */
+    @GetMapping
+    public CommonReturnType getAvailableDay(){
+        return CommonReturnType.create(roomStatusService.availableDay());
     }
 }
