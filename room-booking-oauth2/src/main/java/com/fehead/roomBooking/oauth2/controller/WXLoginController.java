@@ -6,9 +6,11 @@ import com.fehead.roomBooking.common.controller.BaseController;
 import com.fehead.roomBooking.common.response.CommonReturnType;
 import com.fehead.roomBooking.oauth2.service.WXLoginService;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Author Verge
