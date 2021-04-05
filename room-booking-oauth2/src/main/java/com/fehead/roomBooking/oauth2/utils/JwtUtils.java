@@ -47,7 +47,7 @@ public class JwtUtils {
                 .jti(UUID.randomUUID().toString())
                 .authorities(CollUtil.toList("user"))
                 .client_id("user")
-                .exp((System.currentTimeMillis() / 1000) + 3600)
+                .exp((System.currentTimeMillis() / 1000) + 36000)
                 .scope(CollUtil.toList("all"))
                 .user_name("user")
                 .build();

@@ -52,8 +52,8 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
         clients.inMemory()
                 .withClient("admin")//配置client_id
                 .secret(passwordEncoder.encode("123456"))
-                .accessTokenValiditySeconds(3600)
-                .refreshTokenValiditySeconds(864000)
+                .accessTokenValiditySeconds(36000)
+                .refreshTokenValiditySeconds(8640000)
                 .scopes("all")//配置申请的权限范围
                 .authorizedGrantTypes("password","refresh_token");
 
