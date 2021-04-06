@@ -23,6 +23,6 @@ public class TestCustomJwtGenerator {
 
     @Test
     public void test() throws JsonProcessingException, JOSEException {
-        System.out.println(jwtUtils.generateToken());
+        //System.out.println(jwtUtils.generateToken());
     }
 }

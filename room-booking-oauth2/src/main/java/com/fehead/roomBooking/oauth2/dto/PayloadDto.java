@@ -17,7 +17,7 @@ public class PayloadDto {
 
     private String jti;
 
-    private String user_name;
+    private int user_id;
 
     private List<String> authorities;
 

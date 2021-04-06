@@ -3,6 +3,7 @@ package com.fehead.roomBooking.oauth2.service.impl;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.roomBooking.oauth2.entity.User;
 import com.fehead.roomBooking.oauth2.service.UserService;
 import com.fehead.roomBooking.oauth2.service.WXLoginService;
@@ -47,12 +48,21 @@ public class WXLoginServiceImpl implements WXLoginService {
         if (jsonObject.get("session_key") == null) throw new Exception("微信登陆失败");
 
         String openid = jsonObject.getStr("openid");
-        if (!userService.isExist(openid)){
-            User user = new User();
-            user.setOpenId(openid);
-            userService.save(user);
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("open_id",openid);
+        User user = userService.getOne(wrapper);
+
+        int userId;
+        if (user == null){
+            User temp = new User();
+            temp.setOpenId(openid);
+            userService.save(temp);
+            userId = temp.getId();
+        } else {
+            userId = user.getId();
         }
-        return jwtUtils.generateToken();
+
+        return jwtUtils.generateToken(userId);
 
     }
 }

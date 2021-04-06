@@ -20,20 +20,11 @@ import java.util.UUID;
 @Component
 public class JwtUtils {
     @Autowired
-    //@Qualifier("keyPair")
     private KeyPair keyPair;
 
-    /*public String generateToken(String payloadStr) throws JOSEException {
-        JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.RS256).type(JOSEObjectType.JWT).build();
-        Payload payload = new Payload(payloadStr);
-        JWSObject jwsObject = new JWSObject(jwsHeader,payload);
-        JWSSigner jwsSigner = new RSASSASigner(keyPair.getPrivate());
-        jwsObject.sign(jwsSigner);
-        return jwsObject.serialize();
-    }*/
-    public String generateToken() throws JOSEException, JsonProcessingException {
+    public String generateToken(int userId) throws JOSEException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String payloadStr = objectMapper.writeValueAsString(getDefaultPayload());
+        String payloadStr = objectMapper.writeValueAsString(getDefaultPayload(userId));
         JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.RS256).type(JOSEObjectType.JWT).build();
         Payload payload = new Payload(payloadStr);
         JWSObject jwsObject = new JWSObject(jwsHeader,payload);
@@ -42,14 +33,14 @@ public class JwtUtils {
         return jwsObject.serialize();
     }
 
-    public PayloadDto getDefaultPayload(){
+    public PayloadDto getDefaultPayload(int userId){
         return PayloadDto.builder()
                 .jti(UUID.randomUUID().toString())
                 .authorities(CollUtil.toList("user"))
                 .client_id("user")
                 .exp((System.currentTimeMillis() / 1000) + 36000)
                 .scope(CollUtil.toList("all"))
-                .user_name("user")
+                .user_id(userId)
                 .build();
     }
 
