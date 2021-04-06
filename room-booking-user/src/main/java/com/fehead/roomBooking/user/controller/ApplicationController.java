@@ -18,9 +18,9 @@ public class ApplicationController extends BaseController {
     @GetMapping
     public CommonReturnType getApplication( Integer userId, Integer pageNum ){
         if (userId==null){
-           throw  new RuntimeException("userId不能为空");
-        }else  if (pageNum==null){
-           throw  new RuntimeException("pageNum不能为空");
+           throw new RuntimeException("userId不能为空" );
+        }else if (pageNum==null){
+           throw new RuntimeException("pageNum不能为空");
         }else
             return CommonReturnType.create( applicationService.getApplication(userId,pageNum));
     }
