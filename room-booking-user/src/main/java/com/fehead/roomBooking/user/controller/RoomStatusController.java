@@ -20,14 +20,14 @@ public class RoomStatusController extends BaseController {
     /**
      * 获取指定id教室的所有状态信息
      */
-    @GetMapping("/{roomId}/status")
+    @GetMapping("/{roomId}/statuses")
     public CommonReturnType getAllRoomStatus(@PathVariable("roomId") Integer roomId,
                                              @RequestParam(name = "date",required = false) String date) throws ParseException {
         if (date == null) return CommonReturnType.create(roomStatusService.getRoomStatusByRoomId(roomId));
         else return CommonReturnType.create(roomStatusService.getRoomStatusMonthly(date,roomId));
     }
 
-    @GetMapping("/{roomId}/status/{StatusId}")
+    @GetMapping("/{roomId}/statuses/{StatusId}")
     public CommonReturnType getARoomStatusById(@PathVariable("roomId") Integer roomId,
                                                @PathVariable("StatusId")Integer StatusId ){
         RoomStatus roomStatusById = roomStatusService.getRoomStatusById(roomId,StatusId);

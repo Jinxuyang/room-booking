@@ -1,3 +1,5 @@
+server:
+  port: 8002
 spring:
   application:
     name: room-booking-user

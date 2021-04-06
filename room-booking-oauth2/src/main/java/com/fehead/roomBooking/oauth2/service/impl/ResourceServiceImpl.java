@@ -30,6 +30,7 @@ public class ResourceServiceImpl {
         resourceRolesMap.put(PREFIX+"/rooms/*/statuses/*", CollUtil.toList("user","admin"));
         resourceRolesMap.put(PREFIX+"/applications", CollUtil.toList("user","admin"));
         resourceRolesMap.put(PREFIX+"/applications/*", CollUtil.toList("user","admin"));
+        resourceRolesMap.put(PREFIX+"/rooms", CollUtil.toList("user","admin"));
         redisTemplate.opsForHash().putAll("AUTH:RESOURCE_ROLES_MAP", resourceRolesMap);
     }
 }
