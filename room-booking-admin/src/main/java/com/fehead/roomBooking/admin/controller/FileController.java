@@ -22,8 +22,6 @@ import java.io.OutputStream;
 @Slf4j
 public class FileController {
 
-    private static final String PREFIX = "resources/static";
-
     @GetMapping("/download/{fileName}")
     public void downloadFile(@PathVariable String fileName,
                              HttpServletResponse response) throws IOException {
