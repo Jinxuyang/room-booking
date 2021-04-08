@@ -38,6 +38,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         else if (antPathMatcher.match("/api/v1/rooms/*/statuses",oriUri)) resUri = "/api/v1/rooms/*/statuses";
         else if (antPathMatcher.match("/api/v1/rooms/*/statuses/*",oriUri)) resUri = "/api/v1/rooms/*/statuses/*";
         else if (antPathMatcher.match("/api/v1/file/**",oriUri)) resUri = "/api/v1/file/**";
+        else if (antPathMatcher.match("/api/v1/rooms/*",oriUri)) resUri = "/api/v1/rooms/*";
 
         else resUri = oriUri;
 

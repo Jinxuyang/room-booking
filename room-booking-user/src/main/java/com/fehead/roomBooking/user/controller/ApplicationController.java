@@ -26,13 +26,15 @@ public class ApplicationController extends BaseController {
     }
 
     /**
-     *     新增申请 时间重复问题`
+     * 新增申请 时间重复问题`
      * @param application
      * @return
      */
     @PostMapping
-    public CommonReturnType addApplication(@Validated(Create.class) @RequestBody Application application){
+    public CommonReturnType addApplication(@Validated(Create.class) @RequestBody Application application,
+                                           @RequestParam int userId){
 
+        application.setUserId(userId);
         Boolean addApplication = applicationService.addApplication(application);
         if (addApplication){
             return CommonReturnType.create("增加成功");
